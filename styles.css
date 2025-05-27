@@ -86,3 +86,28 @@ li:not(.main-task)::before {
   background: rgba(255, 255, 255, 0.1);
   max-width: 80%;
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+#taskList {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeInTask {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.subtask, .main-task {
+  opacity: 0;
+  animation: fadeInTask 0.4s ease-out forwards;
+}
+
+@keyframes fadeOutTask {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(20px); }
+}

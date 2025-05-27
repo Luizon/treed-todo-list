@@ -47,6 +47,7 @@ The application uses a simple text format to represent tasks and subtasks. This 
         [ ] User reviews
 ```
 The list above would like this:
+
 ![Example list](assets/example_list.png)
 
 ---

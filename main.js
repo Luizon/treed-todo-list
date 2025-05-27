@@ -8,7 +8,7 @@ function addTask(text = "New task", parent = taskList, level = 0) {
 
   li.innerHTML = `
     <button class="btn-toggle" onclick="toggleChildren(this)">▼</button>
-    <button onclick="this.parentElement.remove()">🗑</button>
+    <button onclick="removeTask(this)">🗑</button>
     <input type="checkbox">
     <span contenteditable="true">${text}</span>
     <button onclick="openModal(this)">📝</button>
@@ -19,6 +19,10 @@ function addTask(text = "New task", parent = taskList, level = 0) {
 
   li.setAttribute("data-description", "");
   parent.appendChild(li);
+
+  li.style.animation = "none";
+  void li.offsetWidth; // Force reflow
+  li.style.animation = "fadeInTask 0.4s ease-out forwards";
 }
 
 
@@ -72,6 +76,11 @@ function toggleChildren(button) {
 }
 
 function processList() {
+  const taskList = document.getElementById("taskList");
+  taskList.style.animation = "none";
+  void taskList.offsetWidth;
+  taskList.style.animation = "fadeIn 0.5s ease-out forwards";
+
   const text = document.getElementById("textInput").value
       || document.getElementById("textInput").placeholder;
   const lines = text.split("\n").filter(line => line.trim() !== "");
@@ -101,7 +110,7 @@ function processList() {
 
     li.innerHTML = `
       <button class="btn-toggle" onclick="toggleChildren(this)">▼</button>
-      <button onclick="this.parentElement.remove()">🗑</button>
+      <button onclick="removeTask(this)">🗑</button>
       <input type="checkbox" ${isChecked ? "checked" : ""}>
       <span contenteditable="true">${text}</span>
       <button onclick="openModal(this)">📝</button>
@@ -113,6 +122,15 @@ function processList() {
     while (stack[stack.length - 1].level >= level) stack.pop();
     stack[stack.length - 1].element.appendChild(li);
     stack.push({ element: li.querySelector(".subtasks"), level });
+
+    // **Nuevo: Si todas las subtareas están completadas, minimizar la tarea padre**
+    setTimeout(() => {
+      const subtasks = li.querySelectorAll(".subtasks input[type='checkbox']");
+      if (subtasks.length > 0 && Array.from(subtasks).every(cb => cb.checked)) {
+        const toggleButton = li.querySelector(".btn-toggle");
+        toggleChildren(toggleButton); // Minimizar la tarea padre
+      }
+    }, 10);
   });
 }
 
@@ -144,4 +162,17 @@ function exportList() {
   
   const textarea = document.getElementById("textInput");
   textarea.value = output.join("\n");
+}
+
+function removeTask(button) {
+  const taskElement = button.parentElement;
+
+  taskElement.style.animation = "none";
+  void taskElement.offsetWidth; // Force reflow
+  taskElement.style.animation = "fadeOutTask 0.4s ease-out forwards";
+
+  taskElement.classList.add("removing");
+  setTimeout(() => {
+    taskElement.remove();
+  }, 400);
 }
