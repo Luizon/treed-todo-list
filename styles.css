@@ -77,3 +77,12 @@ li:not(.main-task)::before {
   flex-direction: column;
   gap: 10px;
 }
+
+.task-description {
+  margin-left: 10px;
+  padding: 5px;
+  border-left: 2px solid #ccc;
+  font-size: 0.9em;
+  background: rgba(255, 255, 255, 0.1);
+  max-width: 80%;
+}

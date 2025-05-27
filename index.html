@@ -9,13 +9,26 @@
 <body>
   <h2>Simple TO-DO List</h2>
 
-  <textarea id="textInput" rows="10" cols="50" placeholder="Pega tu lista aquí..."></textarea>
-    <button onclick="processList()">Generar Lista</button>
-    <button onclick="exportList()">Exportar Lista</button>
+  <textarea id="textInput" rows="10" cols="50" placeholder="[ ] Example main task
+	[ ] task 2 [Description: IMPORTANT:\ncheck task 5]
+		[ ] task 4
+		[ ] task 5
+	[x] task 3"></textarea>
+    <button onclick="processList()">Process List</button>
+    <button onclick="exportList()">Export List to text</button>
     <ul id="taskList"></ul>
 
-  <button onclick="addTask()">Agregar Tarea</button>
+  <button onclick="addTask()">Add main task</button>
   <ul id="taskList"></ul>
+
+  <div id="descriptionModal" class="hidden">
+    <div class="modal-content">
+      <textarea id="descriptionText" rows="5" cols="40" placeholder="Write a description here..."></textarea>
+      <button onclick="saveDescription()">Save</button>
+      <button onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
 
   <script src="./main.js"></script>
 </body>
