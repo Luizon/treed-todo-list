@@ -1,48 +1,54 @@
-# Proyecto: Simple TODO List
+# Simple TODO List
 
-Este proyecto es una aplicación web sencilla para gestionar listas de tareas (checklists) directamente desde el navegador. Permite crear múltiples listas de tareas, donde cada tarea puede tener subtareas anidadas de manera infinita. Es ideal para organizar actividades, pendientes o cualquier tipo de trabajo que requiera seguimiento.
+This project is a lightweight web application for managing task lists (checklists) directly in the browser. It allows creating multiple task lists where each task can have nested subtasks infinitely. It's perfect for organizing activities, pending tasks, or any kind of work requiring structured tracking.
 
-## Características principales
+## Main Features
 
-- **Agregar y quitar tareas:** Puedes añadir nuevas tareas o eliminarlas fácilmente.
-- **Subtareas ilimitadas:** Cada tarea puede contener subtareas, y estas a su vez pueden tener sus propias subtareas, sin límite de profundidad.
-- **Interfaz simple:** Todo se maneja desde una sola página HTML, sin necesidad de recargar ni navegar a otras páginas.
-- **Sin backend:** La aplicación funciona completamente en el frontend. No realiza peticiones HTTP, no utiliza sockets ni requiere conexión a servidores externos.
-- **Exportación de listas:** Puedes exportar tus listas en texto plano, que se insertan en el área de texto para que puedas copiarlas y pegarlas donde prefieras (por ejemplo, en un bloc de notas).
+- **Add and remove tasks:** Easily create new tasks or delete them when they're no longer needed.
+- **Unlimited subtasks:** Each task can contain subtasks, which in turn can have their own subtasks, with no depth limit.
+- **Task descriptions:** Each task has the option to add a detailed description, useful for providing context without needing an additional task.
+- **Simple interface:** Everything is managed from a single HTML page, without needing to reload or navigate to other pages.
+- **No backend:** The application runs entirely on the frontend. It doesn't make HTTP requests, use sockets, or require external servers.
+- **List export:** Lists can be exported as plain text and inserted into the text area for copying and pasting wherever needed (e.g., in a text editor).
 
-## Tecnologías utilizadas
+## Technologies Used
 
 - HTML
 - CSS
-- JavaScript (todo el código corre en el navegador)
+- JavaScript (runs entirely in the browser)
 
-## Uso
+## Usage
 
-- Escribe o pega tu lista de tareas en el área de texto.
-- Haz clic en "Generar Lista" para crear la checklist desde el texto.
-- Puedes agregar nuevas tareas o subtareas, y eliminar las que ya no necesites.
-- También puedes usar el botón "Agregar Tarea" para crear un nodo padre (tarea principal) que solo puede tener subtareas, sin necesidad de usar el botón "Generar Lista".
-- Usa el botón "Exportar Lista" para generar la lista en texto plano y copiarla desde el área de texto.
+- Write or paste your task list into **the text area**.
+- Click **Process List button** to create the checklist from the text.
+- Tasks can be *expanded* or *collapsed* using the **▼ / ▶ toggle button**, allowing you to focus on relevant items.
+- Tasks also have a **🗑 button** to remove them, including all their subtasks.
+- Each task has a **📝 button** to open a modal where you can add a description.
+- You can also use the **Add main task** button to create a top-level parent task that can only have subtasks, without using **Generate List**.
+- Click **Export List to text** to generate the plain-text version of the list.
+- Descriptions are stored and exported in the `[Description: ...]` format, preserving line breaks `\n` for readability.
 
-## Ejemplo de Formato de Lista
+## Example List Format
 
-La aplicación usa un formato de texto simple para representar tareas y subtareas. Este es el mismo formato que puedes usar tanto para ingresar como para exportar listas. Las tareas marcadas como completadas usan `[x]`, y las tareas pendientes usan `[ ]`. La indentación con espacios determina la jerarquía (tareas y subtareas).
+The application uses a simple text format to represent tasks and subtasks. This same format can be used both for input and exporting lists. Completed tasks use `[x]`, and pending tasks use `[ ]`. Indentation with spaces determines hierarchy (tasks and subtasks). Descriptions are optional and are stored alongside the task.
 
 ```text
-[x] Proyecto Genérico
-    [x] Investigación
-        [x] Buscar referencias relevantes
-        [ ] Leer documentación técnica
-    [ ] Desarrollo
-        [ ] Crear estructura base
-            [ ] Escribir HTML inicial
-            [ ] Configurar archivos CSS y JS
-        [ ] Implementar funcionalidades clave
-    [ ] Pruebas
-        [ ] Casos de prueba básicos
-        [ ] Revisiones con usuarios
+[ ] Generic Project
+    [x] Research [Description: Do not start development until research is complete.]
+        [x] Find relevant references
+        [x] Read technical documentation
+    [ ] Development
+        [ ] Create base structure
+            [x] Write initial HTML [Description: Doesn't matter if the design isn't perfect.\nLet's start by having somewhere to display the data.]
+            [ ] Set up CSS and JS files
+        [ ] Implement key functionalities
+    [ ] Testing
+        [ ] Basic test cases
+        [ ] User reviews
 ```
+The list above would like this:
+![Example list](assets/example_list.png)
 
 ---
 
-Este proyecto es un ejemplo clásico de un TODO list, pensado para ser simple, rápido y sin dependencias externas.
+This project is a classic example of a TODO list, designed to be simple, fast, and free of external dependencies.
