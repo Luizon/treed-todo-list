@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checklist</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <h2>Checklist Dinámica</h2>
+
+  <textarea id="textInput" rows="10" cols="50" placeholder="Pega tu lista aquí..."></textarea>
+    <button onclick="processList()">Generar Lista</button>
+    <button onclick="exportList()">Exportar Lista</button>
+    <ul id="taskList"></ul>
+
+  <button onclick="addTask()">Agregar Tarea</button>
+  <ul id="taskList"></ul>
+
+  <script src="./main.js"></script>
+</body>
+</html>
