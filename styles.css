@@ -107,7 +107,35 @@ li:not(.main-task)::before {
   animation: fadeInTask 0.4s ease-out forwards;
 }
 
+@keyframes fadeInDescription {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.task-description {
+  opacity: 0;
+  animation: fadeInDescription 0.3s ease-out forwards;
+}
+
 @keyframes fadeOutTask {
   from { opacity: 1; transform: translateX(0); }
   to { opacity: 0; transform: translateX(20px); }
+}
+
+@keyframes fadeOutDescription {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-5px); }
+}
+
+.task-description.hidden {
+  animation: fadeOutDescription 0.3s ease-out forwards;
+}
+
+@keyframes fadeOutSubtasks {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-5px); }
+}
+
+.subtasks.hidden {
+  animation: fadeOutSubtasks 0.3s ease-out forwards;
 }

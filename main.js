@@ -5,9 +5,10 @@ function addTask(text = "New task", parent = taskList, level = 0) {
   const taskType = level === 0 ? "main-task" : "subtask";
   li.classList.add(taskType);
   li.style.setProperty('--level', level);
+  TEST = parent;
 
   li.innerHTML = `
-    <button class="btn-toggle" onclick="toggleChildren(this)">▼</button>
+    <button class="btn-toggle" onclick="toggleChildren(this)" disabled style="opacity: 0.5;">▼</button>
     <button onclick="removeTask(this)">🗑</button>
     <input type="checkbox">
     <span contenteditable="true">${text}</span>
@@ -19,6 +20,16 @@ function addTask(text = "New task", parent = taskList, level = 0) {
 
   li.setAttribute("data-description", "");
   parent.appendChild(li);
+
+  if(level > 0) {
+    parent.parentElement.querySelector(".btn-toggle").disabled = false;
+    parent.parentElement.querySelector(".btn-toggle").style.opacity = "1";
+
+    TEST = parent;
+    if(parent.classList.contains("hidden")) {
+      maximize(parent, parent.parentElement.querySelector(".task-description"));
+    }
+  }
 
   li.style.animation = "none";
   void li.offsetWidth; // Force reflow
@@ -49,31 +60,65 @@ function saveDescription() {
     let descElement = currentTaskElement.querySelector(".task-description");
 
     descElement.innerHTML = rawText.replace(/\n/g, "<br>");
-    if(rawText.trim() !== "")
-      descElement.classList.remove("hidden");
-    else
+    maximize(currentTaskElement.querySelector(".subtasks"), descElement);
+    if(rawText.trim() === "")
       descElement.classList.add("hidden");
+
+    const toggleButton = currentTaskElement.querySelector(".btn-toggle");
+    const hasSubtasks = currentTaskElement.querySelector(".subtasks").children.length > 0;
+    toggleButton.disabled = !hasSubtasks && rawText === "";
+    toggleButton.style.opacity = toggleButton.disabled ? "0.5" : "1";
   }
   closeModal();
 }
 
+function maximize(sublist, description) {
+  sublist.style.animation = "none";
+  void sublist.offsetWidth;
+  sublist.style.animation = "fadeInTask 0.3s ease-out forwards";
+  sublist.classList.remove("hidden");
+
+  const toggleButton = sublist.parentElement.querySelector(".btn-toggle");
+  toggleButton.textContent = "▼";
+
+  if (description.innerHTML.trim() !== "") {
+    description.style.animation = "none";
+    void description.offsetWidth;
+    description.style.animation = "fadeInDescription 0.3s ease-out forwards";
+    description.classList.remove("hidden");
+  }
+}
+
+function minimize(sublist, description) {
+  sublist.style.animation = "none";
+  void sublist.offsetWidth;
+  sublist.style.animation = "fadeOutSubtasks 0.3s ease-out forwards";
+  setTimeout(() => sublist.classList.add("hidden"), 300);
+
+  const toggleButton = sublist.parentElement.querySelector(".btn-toggle");
+  toggleButton.textContent = "▶";
+
+  if (description.innerHTML.trim() !== "") {
+    description.style.animation = "none";
+    void description.offsetWidth;
+    description.style.animation = "fadeOutDescription 0.3s ease-out forwards";
+    setTimeout(() => description.classList.add("hidden"), 300);
+  }
+}
 
 function toggleChildren(button) {
-  const sublist = button.parentElement.querySelector(".subtasks");
-  sublist.classList.toggle("hidden");
+  const taskElement = button.parentElement;
+  const sublist = taskElement.querySelector(".subtasks");
+  const description = taskElement.querySelector(".task-description");
 
-  TEST = button.parentElement.querySelector(".task-description");
   if(sublist.classList.contains("hidden")) {
-    button.textContent = "▶";
-    button.parentElement.querySelector(".task-description").classList.add("hidden");
+    maximize(sublist, description);
   }
   else {
-    button.textContent = "▼";
-    if(button.parentElement.querySelector(".task-description").innerHTML.trim() !== "")
-      button.parentElement.querySelector(".task-description").classList.remove("hidden");
+    minimize(sublist, description);
   }
-
 }
+
 
 function processList() {
   const taskList = document.getElementById("taskList");
@@ -114,7 +159,7 @@ function processList() {
       <input type="checkbox" ${isChecked ? "checked" : ""}>
       <span contenteditable="true">${text}</span>
       <button onclick="openModal(this)">📝</button>
-      <button onclick="addTask('Subtarea', this.parentElement.querySelector('.subtasks'), ${level + 1})">+</button>
+      <button onclick="addTask('Subtask', this.parentElement.querySelector('.subtasks'), ${level + 1})">+</button>
       <div class="task-description ${description ? "" : "hidden"}">${description.replace(/\n/g, "<br>")}</div>
       <ul class="subtasks task"></ul>
     `;
@@ -123,12 +168,20 @@ function processList() {
     stack[stack.length - 1].element.appendChild(li);
     stack.push({ element: li.querySelector(".subtasks"), level });
 
-    // **Nuevo: Si todas las subtareas están completadas, minimizar la tarea padre**
     setTimeout(() => {
+      const toggleButton = li.querySelector(".btn-toggle");
+
+      // minimize the toggle button if there are no subtasks
       const subtasks = li.querySelectorAll(".subtasks input[type='checkbox']");
       if (subtasks.length > 0 && Array.from(subtasks).every(cb => cb.checked)) {
-        const toggleButton = li.querySelector(".btn-toggle");
-        toggleChildren(toggleButton); // Minimizar la tarea padre
+        toggleChildren(toggleButton);
+      }
+
+      // disable the toggle button if there are no subtasks and no description
+      const hasSubtasks = li.querySelector(".subtasks").children.length > 0;
+      if (!hasSubtasks && description.trim() === "") {
+        toggleButton.disabled = true;
+        toggleButton.style.opacity = "0.5";
       }
     }, 10);
   });
@@ -167,12 +220,25 @@ function exportList() {
 function removeTask(button) {
   const taskElement = button.parentElement;
 
+  if(taskElement.classList.contains("removing")) return; // It's already being removed
+
   taskElement.style.animation = "none";
   void taskElement.offsetWidth; // Force reflow
   taskElement.style.animation = "fadeOutTask 0.4s ease-out forwards";
 
   taskElement.classList.add("removing");
   setTimeout(() => {
+    const parentTask = taskElement.parentElement.closest("li");
+
     taskElement.remove();
+    if (parentTask) {
+      const hasSubtasks = parentTask.querySelector(".subtasks").children.length > 0;
+      const hasDescription = parentTask.getAttribute("data-description").trim() !== "";
+      const toggleButton = parentTask.querySelector(".btn-toggle");
+      console.log(hasSubtasks, hasDescription, toggleButton);
+      toggleButton.disabled = !hasSubtasks && !hasDescription;
+      toggleButton.style.opacity = toggleButton.disabled ? "0.5" : "1";
+    }
+
   }, 400);
 }
