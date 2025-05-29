@@ -20,6 +20,10 @@ function addTask(text = "New task", parent = taskList, level = 0) {
 
   li.setAttribute("data-description", "");
   parent.appendChild(li);
+  li.querySelector("input").addEventListener("change", () => {
+    exportList();
+    localStorage.setItem("savedText", document.getElementById("textInput").value);
+  });
 
   if(level > 0) {
     parent.parentElement.querySelector(".btn-toggle").disabled = false;
@@ -119,7 +123,6 @@ function toggleChildren(button) {
   }
 }
 
-
 function processList() {
   const taskList = document.getElementById("taskList");
   taskList.style.animation = "none";
@@ -163,6 +166,11 @@ function processList() {
       <div class="task-description ${description ? "" : "hidden"}">${description.replace(/\n/g, "<br>")}</div>
       <ul class="subtasks task"></ul>
     `;
+
+    li.querySelector("input").addEventListener("change", () => {
+      exportList();
+      localStorage.setItem("savedText", document.getElementById("textInput").value);
+    });
 
     while (stack[stack.length - 1].level >= level) stack.pop();
     stack[stack.length - 1].element.appendChild(li);
@@ -242,3 +250,15 @@ function removeTask(button) {
 
   }, 400);
 }
+
+document.getElementById("textInput").addEventListener("input", () => {
+  localStorage.setItem("savedText", document.getElementById("textInput").value);
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const savedText = localStorage.getItem("savedText");
+  if (savedText) {
+    document.getElementById("textInput").value = savedText;
+    processList();
+  }
+});
