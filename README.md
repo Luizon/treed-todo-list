@@ -19,6 +19,8 @@ This project is a lightweight web application for managing task lists (checklist
 
 ## Usage
 
+Visit the application online at [https://luizon.dev/simple-todo-list](https://luizon.dev/simple-todo-list).
+
 - Write or paste your task list into **the text area**.
 - Click **Process List button** to create the checklist from the text.
 - Tasks can be *expanded* or *collapsed* using the **▼ / ▶ toggle button**, allowing you to focus on relevant items.
@@ -46,10 +48,9 @@ The application uses a simple text format to represent tasks and subtasks. This 
         [ ] Basic test cases
         [ ] User reviews
 ```
-The list above would like this:
+The list above would look like this:
 
 ![Example list](assets/example_list.png)
 
----
-
-This project is a classic example of a TODO list, designed to be simple, fast, and free of external dependencies.
+## License
+This project is licensed under the [MIT License](LICENSE.txt).

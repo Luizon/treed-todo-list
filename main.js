@@ -20,10 +20,8 @@ function addTask(text = "New task", parent = taskList, level = 0) {
 
   li.setAttribute("data-description", "");
   parent.appendChild(li);
-  li.querySelector("input").addEventListener("change", () => {
-    exportList();
-    localStorage.setItem("savedText", document.getElementById("textInput").value);
-  });
+  li.querySelector("input").addEventListener("change", (e) => handleCheckboxChange(li.querySelector("input")) );
+  li.querySelector("span").addEventListener("input", (e) => saveToLocalStorage() );
 
   if(level > 0) {
     parent.parentElement.querySelector(".btn-toggle").disabled = false;
@@ -38,6 +36,8 @@ function addTask(text = "New task", parent = taskList, level = 0) {
   li.style.animation = "none";
   void li.offsetWidth; // Force reflow
   li.style.animation = "fadeInTask 0.4s ease-out forwards";
+
+  saveToLocalStorage();
 }
 
 
@@ -50,6 +50,8 @@ function openModal(button) {
 
   descriptionText.value = currentTaskElement.getAttribute("data-description") || "";
   modal.style.display = "block";
+
+  descriptionText.focus();
 }
 
 function closeModal() {
@@ -72,6 +74,8 @@ function saveDescription() {
     const hasSubtasks = currentTaskElement.querySelector(".subtasks").children.length > 0;
     toggleButton.disabled = !hasSubtasks && rawText === "";
     toggleButton.style.opacity = toggleButton.disabled ? "0.5" : "1";
+
+    saveToLocalStorage();
   }
   closeModal();
 }
@@ -167,10 +171,7 @@ function processList() {
       <ul class="subtasks task"></ul>
     `;
 
-    li.querySelector("input").addEventListener("change", () => {
-      exportList();
-      localStorage.setItem("savedText", document.getElementById("textInput").value);
-    });
+    li.querySelector("input").addEventListener("change", (e) => handleCheckboxChange(li.querySelector("input")) );
 
     while (stack[stack.length - 1].level >= level) stack.pop();
     stack[stack.length - 1].element.appendChild(li);
@@ -248,7 +249,63 @@ function removeTask(button) {
       toggleButton.style.opacity = toggleButton.disabled ? "0.5" : "1";
     }
 
+    saveToLocalStorage();
   }, 400);
+}
+
+function saveToLocalStorage() {
+  exportList();
+  localStorage.setItem("savedText", document.getElementById("textInput").value);
+}
+
+function handleCheckboxChange(checkbox) {
+  const parentTask = checkbox.closest("li").parentElement.closest("li");
+  const sublist = checkbox.parentElement.querySelector(".subtasks");
+
+  // check/uncheck children
+  if (sublist && sublist.hasChildNodes()) {
+    sublist.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = checkbox.checked);
+  }
+
+  if (parentTask) {
+    checkParentHierarchy(parentTask);
+  }
+
+  if (!checkbox.checked && parentTask) {
+    uncheckParentHierarchy(parentTask);
+  }
+
+  saveToLocalStorage();
+}
+
+function checkParentHierarchy(task) {
+  const list = task.querySelector(".subtasks");
+  const siblingCheckboxes = list ? list.querySelectorAll("input[type='checkbox']") : [];
+  const parentCheckbox = task.querySelector("input[type='checkbox']");
+
+  if (siblingCheckboxes.length > 0) {
+    const allChecked = Array.from(siblingCheckboxes).every(cb => cb.checked);
+    parentCheckbox.checked = allChecked;
+  }
+
+  const grandParentTask = task.parentElement.closest("li");
+  if (grandParentTask && parentCheckbox.checked) {
+    checkParentHierarchy(grandParentTask);
+  }
+}
+
+function uncheckParentHierarchy(task) {
+  const list = task.querySelector(".subtasks");
+  const parentCheckbox = task.querySelector("input[type='checkbox']");
+
+  if (parentCheckbox.checked) {
+    parentCheckbox.checked = false;
+  }
+
+  const grandParentTask = task.parentElement.closest("li");
+  if (grandParentTask) {
+    uncheckParentHierarchy(grandParentTask);
+  }
 }
 
 document.getElementById("textInput").addEventListener("input", () => {
