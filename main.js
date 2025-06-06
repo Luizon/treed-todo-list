@@ -65,7 +65,9 @@ function saveDescription() {
 
     let descElement = currentTaskElement.querySelector(".task-description");
 
-    descElement.innerHTML = rawText.replace(/\n/g, "<br>");
+    descElement.innerHTML = rawText
+        .replace(/(^|\n)( +)/g, (match, p1, spaces) => p1 + spaces.replace(/ /g, "&nbsp;")) // blank spaces
+        .replace(/\n/g, "<br>") // break lines
     maximize(currentTaskElement.querySelector(".subtasks"), descElement);
     if(rawText.trim() === "")
       descElement.classList.add("hidden");
@@ -146,9 +148,13 @@ function processList() {
     const isChecked = line.includes("[x]");
     
     let description = "";
+    let innerDescription = "";
     const descriptionMatch = line.match(/\[Description: (.+)\]$/);
     if (descriptionMatch) {
       description = descriptionMatch[1].replace(/\\n/g, "\n");
+      innerDescription = description
+          .replace(/(^|\n)( +)/g, (match, p1, spaces) => p1 + spaces.replace(/ /g, "&nbsp;")) // blank spaces
+          .replace(/\n/g, "<br>") // break lines
       line = line.replace(/\[Description: .+\]$/, "").trim();
     }
 
@@ -167,7 +173,7 @@ function processList() {
       <span contenteditable="true">${text}</span>
       <button onclick="openModal(this)">📝</button>
       <button onclick="addTask('Subtask', this.parentElement.querySelector('.subtasks'), ${level + 1})">+</button>
-      <div class="task-description ${description ? "" : "hidden"}">${description.replace(/\n/g, "<br>")}</div>
+      <div class="task-description ${description ? "" : "hidden"}">${innerDescription}</div>
       <ul class="subtasks task"></ul>
     `;
 
