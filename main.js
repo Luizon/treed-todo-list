@@ -19,7 +19,7 @@ function addTask(text = "New task", parent = taskList, level = 0) {
 
   li.setAttribute("data-description", "");
   parent.appendChild(li);
-  li.querySelector("input").addEventListener("change", (e) => handleCheckboxChange(li.querySelector("input")) );
+  li.querySelector("input[type='checkbox']").addEventListener("change", (e) => handleCheckboxChange(li.querySelector("input[type='checkbox']")) );
   li.querySelector("span").addEventListener("input", (e) => saveToLocalStorage() );
 
   if(level > 0) {
@@ -29,6 +29,11 @@ function addTask(text = "New task", parent = taskList, level = 0) {
     if(parent.classList.contains("hidden")) {
       maximize(parent, parent.parentElement.querySelector(".task-description"));
     }
+  }
+
+  const parentTask = parent.closest("li");
+  if (parentTask) {
+    uncheckParentHierarchy(parentTask);
   }
 
   li.style.animation = "none";
@@ -175,7 +180,7 @@ function processList() {
       <ul class="subtasks task"></ul>
     `;
 
-    li.querySelector("input").addEventListener("change", (e) => handleCheckboxChange(li.querySelector("input")) );
+    li.querySelector("input[type='checkbox']").addEventListener("change", (e) => handleCheckboxChange(li.querySelector("input[type='checkbox']")) );
 
     while (stack[stack.length - 1].level >= level) stack.pop();
     stack[stack.length - 1].element.appendChild(li);
@@ -248,9 +253,10 @@ function removeTask(button) {
       const hasSubtasks = parentTask.querySelector(".subtasks").children.length > 0;
       const hasDescription = parentTask.getAttribute("data-description").trim() !== "";
       const toggleButton = parentTask.querySelector(".btn-toggle");
-      console.log(hasSubtasks, hasDescription, toggleButton);
       toggleButton.disabled = !hasSubtasks && !hasDescription;
       toggleButton.style.opacity = toggleButton.disabled ? "0.5" : "1";
+
+      validateParentOnRemove(parentTask);
     }
 
     saveToLocalStorage();
@@ -260,6 +266,22 @@ function removeTask(button) {
 function saveToLocalStorage() {
   exportList();
   localStorage.setItem("savedText", document.getElementById("textInput").value);
+}
+
+function validateParentOnRemove(task) {
+  const list = task.querySelector(".subtasks");
+  const siblingCheckboxes = list ? list.querySelectorAll("input[type='checkbox']") : [];
+  const parentCheckbox = task.querySelector("input[type='checkbox']");
+
+  if (siblingCheckboxes.length > 0) {
+    const allChecked = Array.from(siblingCheckboxes).every(cb => cb.checked);
+    parentCheckbox.checked = allChecked;
+  }
+
+  const grandParentTask = task.parentElement.closest("li");
+  if (grandParentTask && parentCheckbox.checked) {
+    validateParentOnRemove(grandParentTask);
+  }
 }
 
 function handleCheckboxChange(checkbox) {
