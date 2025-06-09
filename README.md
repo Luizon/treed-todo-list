@@ -19,7 +19,7 @@ This project is a lightweight web application for managing task lists (checklist
 
 ## Usage
 
-Visit the application online at [https://luizon.dev/simple-todo-list](https://luizon.dev/simple-todo-list).
+Visit the application online at [https://luizon.dev/treed-todo-list](https://luizon.dev/treed-todo-list).
 
 - Write or paste your task list into **the text area**.
 - Click **Process List button** to create the checklist from the text.
