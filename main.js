@@ -5,7 +5,6 @@ function addTask(text = "New task", parent = taskList, level = 0) {
   const taskType = level === 0 ? "main-task" : "subtask";
   li.classList.add(taskType);
   li.style.setProperty('--level', level);
-  TEST = parent;
 
   li.innerHTML = `
     <button class="btn-toggle" onclick="toggleChildren(this)" disabled style="opacity: 0.5;">▼</button>
@@ -27,7 +26,6 @@ function addTask(text = "New task", parent = taskList, level = 0) {
     parent.parentElement.querySelector(".btn-toggle").disabled = false;
     parent.parentElement.querySelector(".btn-toggle").style.opacity = "1";
 
-    TEST = parent;
     if(parent.classList.contains("hidden")) {
       maximize(parent, parent.parentElement.querySelector(".task-description"));
     }
