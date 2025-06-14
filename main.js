@@ -40,6 +40,14 @@ function addTask(text = "New task", parent = taskList, level = 0) {
   void li.offsetWidth; // Force reflow
   li.style.animation = "fadeInTask 0.4s ease-out forwards";
 
+  li.querySelector("span").focus();
+  
+  const range = document.createRange();
+  range.selectNodeContents(li.querySelector("span"));
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+
   saveToLocalStorage();
 }
 
