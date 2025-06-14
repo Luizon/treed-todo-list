@@ -51,7 +51,6 @@ function addTask(text = "New task", parent = taskList, level = 0) {
   saveToLocalStorage();
 }
 
-
 let currentTaskElement = null;
 
 function openModal(button) {
@@ -76,7 +75,8 @@ function saveDescription() {
 
     let descElement = currentTaskElement.querySelector(".task-description");
 
-    descElement.innerHTML = rawText
+    descElement.innerHTML = replaceURLsWithContent(rawText);
+    descElement.innerHTML = descElement.innerHTML
         .replace(/(^|\n)( +)/g, (match, p1, spaces) => p1 + spaces.replace(/ /g, "&nbsp;")) // blank spaces
         .replace(/\n/g, "<br>") // break lines
     maximize(currentTaskElement.querySelector(".subtasks"), descElement);
@@ -91,6 +91,49 @@ function saveDescription() {
     saveToLocalStorage();
   }
   closeModal();
+}
+
+function replaceURLsWithContent(text) {
+  const urlRegex = /\b(https?:\/\/[^\s\n\t]+)\b/g;
+
+  return text.replace(urlRegex, (url) => {
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
+    const lowerURL = url.toLowerCase();
+
+    if (imageExtensions.some(ext => lowerURL.includes(ext))) {
+      return `<img src="${url}" class="description-image" tabindex="1" onclick="openFullscreen(this)">`;
+    }
+    return `<a href="${url}">${url}</a>`;
+  });
+}
+
+function openFullscreen(img) {
+  // Crear un contenedor modal si no existe
+  let modal = document.getElementById("fullscreen-modal");
+
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "fullscreen-modal";
+    modal.classList.add("modal-img");
+    const modalImg = document.createElement("img");
+    modal.appendChild(modalImg);
+    document.body.appendChild(modal);
+
+    document.addEventListener( "keydown", event => {
+      if( event.key === "Escape" ) {
+        modal.style.display = "none";
+      }
+    })
+  }
+
+  // Mostrar imagen en el modal
+  modal.style.display = "flex";
+  modal.querySelector("img").src = img.src;
+
+  // Cerrar al hacer clic
+  modal.onclick = () => {
+    modal.style.display = "none";
+  };
 }
 
 function maximize(sublist, description) {
@@ -163,7 +206,8 @@ function processList() {
     const descriptionMatch = line.match(/\[Description: (.+)\]$/);
     if (descriptionMatch) {
       description = descriptionMatch[1].replace(/\\n/g, "\n");
-      innerDescription = description
+      innerDescription = replaceURLsWithContent(description);
+      innerDescription = innerDescription
           .replace(/(^|\n)( +)/g, (match, p1, spaces) => p1 + spaces.replace(/ /g, "&nbsp;")) // blank spaces
           .replace(/\n/g, "<br>") // break lines
       line = line.replace(/\[Description: .+\]$/, "").trim();
@@ -341,6 +385,12 @@ function uncheckParentHierarchy(task) {
     uncheckParentHierarchy(grandParentTask);
   }
 }
+
+document.addEventListener("keydown", event => {
+  if(event.key === "Escape") {
+    document.getElementById("descriptionModal").style = "display: none;";
+  }
+});
 
 document.getElementById("textInput").addEventListener("input", () => {
   localStorage.setItem("savedText", document.getElementById("textInput").value);
