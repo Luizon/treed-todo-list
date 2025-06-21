@@ -169,3 +169,13 @@ li:not(.main-task)::before {
 .subtasks.hidden {
   animation: fadeOutSubtasks 0.3s ease-out forwards;
 }
+
+.insertion-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: white;
+  z-index: 1000;
+  pointer-events: none;
+}

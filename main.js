@@ -1,4 +1,5 @@
 const taskList = document.getElementById("taskList");
+let insertionLine = null;
 
 function addTask(text = "New task", parent = taskList, level = 0) {
   const li = document.createElement("li");
@@ -19,8 +20,8 @@ function addTask(text = "New task", parent = taskList, level = 0) {
 
   li.setAttribute("data-description", "");
   parent.appendChild(li);
-  li.querySelector("input[type='checkbox']").addEventListener("change", (e) => handleCheckboxChange(li.querySelector("input[type='checkbox']")) );
-  li.querySelector("span").addEventListener("input", (e) => saveToLocalStorage() );
+  
+  addTaskEventListeners(li);
 
   if(level > 0) {
     parent.parentElement.querySelector(".btn-toggle").disabled = false;
@@ -232,7 +233,7 @@ function processList() {
       <ul class="subtasks task"></ul>
     `;
 
-    li.querySelector("input[type='checkbox']").addEventListener("change", (e) => handleCheckboxChange(li.querySelector("input[type='checkbox']")) );
+    addTaskEventListeners(li);
 
     while (stack[stack.length - 1].level >= level) stack.pop();
     stack[stack.length - 1].element.appendChild(li);
@@ -257,6 +258,98 @@ function processList() {
   });
 }
 
+function showInsertionLine(li, position) {
+  if (!insertionLine) {
+    insertionLine = document.createElement('div');
+    insertionLine.className = 'insertion-line';
+    document.body.appendChild(insertionLine);
+  }
+  const rect = li.getBoundingClientRect();
+  insertionLine.style.width = rect.width + "px";
+  insertionLine.style.left = rect.left + "px";
+  insertionLine.style.top = ( (position === "top" ? rect.top : rect.bottom) + 18 ) + "px";
+  // insertionLine.style.top = (li.getBoundingClientRect().y) + "px";
+  insertionLine.style.display = "block";
+}
+
+function hideInsertionLine() {
+  if (insertionLine) insertionLine.style.display = "none";
+}
+
+function addTaskEventListeners(li) {
+
+  li.querySelector("input[type='checkbox']").addEventListener("change", (e) => handleCheckboxChange(li.querySelector("input[type='checkbox']")) );
+  li.querySelector("span").addEventListener("input", (e) => saveToLocalStorage() );
+
+  li.setAttribute("draggable", "true");
+
+  li.addEventListener("dragstart", (e) => {
+    e.dataTransfer.setData("text/plain", null); // Necesario para Firefox
+    if(window.draggedTask)
+      return;
+    window.draggedTask = li;
+    window.lastParent = li.parentElement.closest("li");
+    li.classList.add("dragging");
+  });
+
+  li.addEventListener("dragend", () => {
+    li.classList.remove("dragging");
+    window.draggedTask = null;
+  });
+
+  li.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    if( e.target !== li && e.target.parentElement !== li )
+      return;
+    li.classList.add("drag-over");
+    const rect = li.getBoundingClientRect();
+    const mouseY = e.clientY;
+    const middleY = rect.top + rect.height / 2;
+    if (mouseY < middleY) {
+      showInsertionLine(li, "top");
+    } else {
+      showInsertionLine(li, "bottom");
+    }
+  });
+
+  li.addEventListener("dragleave", () => {
+    li.classList.remove("drag-over");
+    hideInsertionLine();
+  });
+
+  li.addEventListener("drop", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    li.classList.remove("drag-over");
+    hideInsertionLine();
+    const dragged = window.draggedTask;
+    if (
+      dragged &&
+      dragged !== li &&
+      !dragged.contains(li)
+    ) {
+      const rect = li.getBoundingClientRect();
+      const mouseY = e.clientY;
+      const middleY = rect.top + rect.height / 2;
+
+      if (mouseY < middleY) {
+        li.parentElement.insertBefore(dragged, li);
+      } else {
+        li.parentElement.insertBefore(dragged, li.nextSibling);
+      }
+
+      const parentTask = li.closest("li");
+      if (parentTask) {
+        validateParentOnRemove(parentTask);
+      }
+      if (window.lastParent) {
+        validateParentOnRemove(window.lastParent);
+      }
+
+      saveToLocalStorage();
+    }
+  });
+}
 
 function exportList() {
   const output = [];
@@ -331,7 +424,7 @@ function validateParentOnRemove(task) {
   }
 
   const grandParentTask = task.parentElement.closest("li");
-  if (grandParentTask && parentCheckbox.checked) {
+  if (grandParentTask) {
     validateParentOnRemove(grandParentTask);
   }
 }
