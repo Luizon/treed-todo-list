@@ -13,7 +13,8 @@ button {
     color: black;
     border: 1px solid black;
     position: relative;
-    z-index: 1;
+    height: 20px;
+    z-index: 2;
 }
 
 input[type="checkbox"] {
@@ -34,11 +35,12 @@ ul {
 ul:not(#taskList)::before {
     content: "";
     position: absolute;
-    top: -10px;
-    left: 0px;
+    top: -19px;
+    left: -5px;
     width: 2px;
     height: 100%;
     background-color: #ccc;
+    z-index: 1;
 }
 
 li {
@@ -49,8 +51,8 @@ li {
 li:not(.main-task)::before {
     content: "";
     position: absolute;
-    top: 10px;
-    left: 0px;
+    top: 18px;
+    left: -9px;
     width: 20px;
     height: 2px;
     background-color: #ccc;
@@ -79,7 +81,7 @@ li:not(.main-task)::before {
 }
 
 .task-description {
-  margin-left: 10px;
+  margin-left: 5px;
   padding: 5px;
   border-left: 2px solid #ccc;
   font-size: 0.9em;
@@ -171,11 +173,33 @@ li:not(.main-task)::before {
 }
 
 .insertion-line {
-  position: absolute;
+  position: fixed;
   left: 0;
   right: 0;
   height: 2px;
   background: white;
   z-index: 1000;
   pointer-events: none;
+}
+
+li.main-task, li.subtask {
+  border: 1px solid #888;
+  background: #181818;
+  border-radius: 6px;
+  margin: 0px 0 0px 4px;
+  padding: 8px 4px;
+  transition: box-shadow 0.2s;
+  box-shadow: 0 2px 6px #0004;
+  position: relative;
+}
+li.main-task {
+  background: #222;
+}
+li.subtask {
+  background: #181818;
+}
+li.dragging {
+  opacity: 0.6;
+  box-shadow: 0 0 0 2px #fff, 0 4px 12px #0008;
+  z-index: 3;
 }

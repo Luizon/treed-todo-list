@@ -8,7 +8,7 @@ function addTask(text = "New task", parent = taskList, level = 0) {
   li.style.setProperty('--level', level);
 
   li.innerHTML = `
-    <button class="btn-toggle" onclick="toggleChildren(this)" disabled style="opacity: 0.5;">▼</button>
+    <button class="btn-toggle" onclick="toggleChildren(this)" disabled style="color: #0000;">▼</button>
     <button onclick="removeTask(this)">🗑</button>
     <input type="checkbox">
     <span contenteditable="true">${text}</span>
@@ -25,8 +25,7 @@ function addTask(text = "New task", parent = taskList, level = 0) {
 
   if(level > 0) {
     parent.parentElement.querySelector(".btn-toggle").disabled = false;
-    parent.parentElement.querySelector(".btn-toggle").style.opacity = "1";
-
+    parent.parentElement.querySelector(".btn-toggle").style.color = "#000F";
     if(parent.classList.contains("hidden")) {
       maximize(parent, parent.parentElement.querySelector(".task-description"));
     }
@@ -87,7 +86,7 @@ function saveDescription() {
     const toggleButton = currentTaskElement.querySelector(".btn-toggle");
     const hasSubtasks = currentTaskElement.querySelector(".subtasks").children.length > 0;
     toggleButton.disabled = !hasSubtasks && rawText === "";
-    toggleButton.style.opacity = toggleButton.disabled ? "0.5" : "1";
+    toggleButton.style.color = toggleButton.disabled ? "#0000" : "#000f";
 
     saveToLocalStorage();
   }
@@ -252,7 +251,7 @@ function processList() {
       const hasSubtasks = li.querySelector(".subtasks").children.length > 0;
       if (!hasSubtasks && description.trim() === "") {
         toggleButton.disabled = true;
-        toggleButton.style.opacity = "0.5";
+        toggleButton.style.color = "#0000";
       }
     }, 10);
   });
@@ -267,8 +266,7 @@ function showInsertionLine(li, position) {
   const rect = li.getBoundingClientRect();
   insertionLine.style.width = rect.width + "px";
   insertionLine.style.left = rect.left + "px";
-  insertionLine.style.top = ( (position === "top" ? rect.top : rect.bottom) + 18 ) + "px";
-  // insertionLine.style.top = (li.getBoundingClientRect().y) + "px";
+  insertionLine.style.top = ( (position === "top" ? rect.top : rect.bottom) ) + "px";
   insertionLine.style.display = "block";
 }
 
@@ -338,12 +336,29 @@ function addTaskEventListeners(li) {
         li.parentElement.insertBefore(dragged, li.nextSibling);
       }
 
+      const isDroppedInAnotherTask = li.parentElement.closest("li");
+      if (isDroppedInAnotherTask) {
+        dragged.classList.remove("main-task");
+        dragged.classList.add("subtask");
+      }
+      else {
+        dragged.classList.add("main-task");
+        dragged.classList.remove("subtask");
+      }
+
       const parentTask = li.closest("li");
       if (parentTask) {
         validateParentOnRemove(parentTask);
       }
       if (window.lastParent) {
         validateParentOnRemove(window.lastParent);
+
+        console.log(window.lastParent);
+        const hasSubtasks = window.lastParent.querySelector(".subtasks").children.length > 0;
+        const hasDescription = window.lastParent.getAttribute("data-description").trim() !== "";
+        const toggleButton = window.lastParent.querySelector(".btn-toggle");
+        toggleButton.disabled = !hasSubtasks && !hasDescription;
+        toggleButton.style.color = toggleButton.disabled ? "#0000" : "#000f";
       }
 
       saveToLocalStorage();
@@ -399,7 +414,7 @@ function removeTask(button) {
       const hasDescription = parentTask.getAttribute("data-description").trim() !== "";
       const toggleButton = parentTask.querySelector(".btn-toggle");
       toggleButton.disabled = !hasSubtasks && !hasDescription;
-      toggleButton.style.opacity = toggleButton.disabled ? "0.5" : "1";
+      toggleButton.style.color = toggleButton.disabled ? "#0000" : "#000f";
 
       validateParentOnRemove(parentTask);
     }
