@@ -266,7 +266,13 @@ function showInsertionLine(li, position) {
   const rect = li.getBoundingClientRect();
   insertionLine.style.width = rect.width + "px";
   insertionLine.style.left = rect.left + "px";
-  insertionLine.style.top = ( (position === "top" ? rect.top : rect.bottom) ) + "px";
+  if (position === "top") {
+    insertionLine.style.top = rect.top + "px";
+  } else if (position === "bottom") {
+    insertionLine.style.top = rect.bottom + "px";
+  } else if (position === "middle") {
+    insertionLine.style.top = (rect.top + rect.height / 2) + "px";
+  }
   insertionLine.style.display = "block";
 }
 
@@ -302,11 +308,15 @@ function addTaskEventListeners(li) {
     li.classList.add("drag-over");
     const rect = li.getBoundingClientRect();
     const mouseY = e.clientY;
-    const middleY = rect.top + rect.height / 2;
-    if (mouseY < middleY) {
+    const topZone = rect.top + rect.height / 3;
+    const bottomZone = rect.bottom - rect.height / 3;
+
+    if (mouseY < topZone) {
       showInsertionLine(li, "top");
-    } else {
+    } else if (mouseY > bottomZone) {
       showInsertionLine(li, "bottom");
+    } else {
+      showInsertionLine(li, "middle");
     }
   });
 
@@ -328,22 +338,37 @@ function addTaskEventListeners(li) {
     ) {
       const rect = li.getBoundingClientRect();
       const mouseY = e.clientY;
-      const middleY = rect.top + rect.height / 2;
+      const topZone = rect.top + rect.height / 3;
+      const bottomZone = rect.bottom - rect.height / 3;
 
-      if (mouseY < middleY) {
+      if (mouseY < topZone) {
         li.parentElement.insertBefore(dragged, li);
-      } else {
+        if (!li.parentElement.closest("li")) {
+          dragged.classList.add("main-task");
+          dragged.classList.remove("subtask");
+        } else {
+          dragged.classList.remove("main-task");
+          dragged.classList.add("subtask");
+        }
+      } else if (mouseY > bottomZone) {
         li.parentElement.insertBefore(dragged, li.nextSibling);
-      }
-
-      const isDroppedInAnotherTask = li.parentElement.closest("li");
-      if (isDroppedInAnotherTask) {
+        if (!li.parentElement.closest("li")) {
+          dragged.classList.add("main-task");
+          dragged.classList.remove("subtask");
+        } else {
+          dragged.classList.remove("main-task");
+          dragged.classList.add("subtask");
+        }
+      } else {
+        const sublist = li.querySelector(".subtasks");
+        sublist.appendChild(dragged);
         dragged.classList.remove("main-task");
         dragged.classList.add("subtask");
-      }
-      else {
-        dragged.classList.add("main-task");
-        dragged.classList.remove("subtask");
+
+        const toggleButton = li.querySelector(".btn-toggle");
+        toggleButton.disabled = false;
+        toggleButton.style.color = "#000f";
+        maximize(sublist, li.querySelector(".task-description"));
       }
 
       const parentTask = li.closest("li");
@@ -352,8 +377,6 @@ function addTaskEventListeners(li) {
       }
       if (window.lastParent) {
         validateParentOnRemove(window.lastParent);
-
-        console.log(window.lastParent);
         const hasSubtasks = window.lastParent.querySelector(".subtasks").children.length > 0;
         const hasDescription = window.lastParent.getAttribute("data-description").trim() !== "";
         const toggleButton = window.lastParent.querySelector(".btn-toggle");
