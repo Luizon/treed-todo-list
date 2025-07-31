@@ -75,8 +75,9 @@ function saveDescription() {
 
     let descElement = currentTaskElement.querySelector(".task-description");
 
-    descElement.innerHTML = replaceURLsWithContent(rawText);
-    descElement.innerHTML = descElement.innerHTML
+    let processedText = replaceURLsWithContent(rawText);
+    processedText = processLists(processedText);
+    descElement.innerHTML = processedText
         .replace(/(^|\n)( +)/g, (match, p1, spaces) => p1 + spaces.replace(/ /g, "&nbsp;")) // blank spaces
         .replace(/\n/g, "<br>") // break lines
     maximize(currentTaskElement.querySelector(".subtasks"), descElement);
@@ -107,8 +108,68 @@ function replaceURLsWithContent(text) {
   });
 }
 
+function processLists(text) {
+  const lines = text.split('\n');
+  const result = [];
+  let currentListHtml = '';
+  let listStack = [];
+  let inListMode = false;
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const listMatch = line.match(/^(\s*)-\s*(.+)$/);
+    
+    if (listMatch) {
+      const indentLevel = Math.floor(listMatch[1].length / 2);
+      const content = listMatch[2];
+      
+      if (!inListMode) {
+        inListMode = true;
+        currentListHtml = '';
+        listStack = [];
+      }
+      
+      while (listStack.length > indentLevel + 1) {
+        currentListHtml += '</ul>';
+        listStack.pop();
+      }
+      
+      if (listStack.length === indentLevel) {
+        currentListHtml += '<ul>';
+        listStack.push(indentLevel);
+      }
+      
+      currentListHtml += `<li>${content}</li>`;
+      
+    } else {
+      if (inListMode) {
+        while (listStack.length > 0) {
+          currentListHtml += '</ul>';
+          listStack.pop();
+        }
+        result.push(currentListHtml);
+        inListMode = false;
+        currentListHtml = '';
+      }
+      
+      if (line.trim() !== '' || result.length === 0) {
+        result.push(line);
+      }
+    }
+  }
+  
+  if (inListMode) {
+    while (listStack.length > 0) {
+      currentListHtml += '</ul>';
+      listStack.pop();
+    }
+    result.push(currentListHtml);
+  }
+  
+  return result.join('\n');
+}
+
 function openFullscreen(img) {
-  // Crear un contenedor modal si no existe
   let modal = document.getElementById("fullscreen-modal");
 
   if (!modal) {
@@ -126,11 +187,9 @@ function openFullscreen(img) {
     })
   }
 
-  // Mostrar imagen en el modal
   modal.style.display = "flex";
   modal.querySelector("img").src = img.src;
 
-  // Cerrar al hacer clic
   modal.onclick = () => {
     modal.style.display = "none";
   };
@@ -207,6 +266,7 @@ function processList() {
     if (descriptionMatch) {
       description = descriptionMatch[1].replace(/\\n/g, "\n");
       innerDescription = replaceURLsWithContent(description);
+      innerDescription = processLists(innerDescription);
       innerDescription = innerDescription
           .replace(/(^|\n)( +)/g, (match, p1, spaces) => p1 + spaces.replace(/ /g, "&nbsp;")) // blank spaces
           .replace(/\n/g, "<br>") // break lines
@@ -288,7 +348,7 @@ function addTaskEventListeners(li) {
   li.setAttribute("draggable", "true");
 
   li.addEventListener("dragstart", (e) => {
-    e.dataTransfer.setData("text/plain", null); // Necesario para Firefox
+    e.dataTransfer.setData("text/plain", null); // needed for firefox
     if(window.draggedTask)
       return;
     window.draggedTask = li;
