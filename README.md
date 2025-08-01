@@ -23,9 +23,10 @@ This project is a lightweight web application for managing task lists (checklist
 Visit the online application at [https://luizon.dev/treed-todo-list](https://luizon.dev/treed-todo-list).
 
 - Tasks can be *expanded* or *collapsed* using the **▼ / ▶ toggle button**, allowing you to focus on relevant items.
-- Tasks have a **🗑 button** to remove them, including all their subtasks.
+- Use the **🗑 button** to remove the task, including all their subtasks.
 - Each task has a **📝 button** to open a modal where you can add a description.
 - Descriptions support links (e.g., `https://example.com`) and image URLs (e.g., `https://example.com/image.png`), which are rendered as clickable links and inline images.
+- You can add lists in the descriptions just like this one you're reading :)
 
 ## License
 This project is licensed under the [MIT License](LICENSE.txt).
