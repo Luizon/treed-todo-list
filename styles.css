@@ -11,7 +11,6 @@ body {
 .main-header {
   text-align: center;
   margin-bottom: 40px;
-  padding: 20px 0;
 }
 
 .main-title {
@@ -266,10 +265,10 @@ ul {
 ul:not(#taskList)::before {
     content: "";
     position: absolute;
-    top: -26px;
+    top: -10px;
     left: 4px;
     width: 2px;
-    height: 100%;
+    height: var(--line-height, 100%);
     background-color: rgba(255, 255, 255, 0.3);
     z-index: 0;
 }
@@ -553,11 +552,6 @@ li:not(.main-task)::before {
   to { opacity: 1; transform: translateY(0); }
 }
 
-.task-description {
-  opacity: 0;
-  animation: fadeInDescription 0.3s ease-out forwards;
-}
-
 @keyframes fadeOutTask {
   from { opacity: 1; transform: translateX(0); }
   to { opacity: 0; transform: translateX(20px); }
@@ -642,7 +636,6 @@ li.main-task > *:not(.task-description):not(.subtasks),
 li.subtask > *:not(.task-description):not(.subtasks) {
   display: inline-block;
   vertical-align: middle;
-  margin-right: 8px;
 }
 
 li.main-task span[contenteditable], li.subtask span[contenteditable] {
@@ -654,7 +647,6 @@ li.main-task span[contenteditable], li.subtask span[contenteditable] {
   transition: background 0.2s ease;
   font-size: 16px;
   line-height: 1.4;
-  min-width: 200px;
   color: inherit;
 }
 
@@ -664,8 +656,10 @@ li.main-task span[contenteditable]:focus, li.subtask span[contenteditable]:focus
 }
 
 .task-description {
+  opacity: 0;
+  animation: fadeInDescription 0.3s ease-out forwards;
   margin: 8px 0 4px 0;
-  padding: 12px;
+  padding: 6px;
   border-left: 3px solid #4a9eff;
   border-radius: 6px;
   font-size: 14px;
