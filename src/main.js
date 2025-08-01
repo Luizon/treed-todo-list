@@ -6,7 +6,10 @@ window.lastParent = null;
 // Event listeners
 document.addEventListener("keydown", event => {
   if(event.key === "Escape") {
-    document.getElementById("descriptionModal").style = "display: none;";
+    const modal = document.getElementById("descriptionModal");
+    if (modal.classList.contains("show")) {
+      window.closeModal();
+    }
   }
 });
 

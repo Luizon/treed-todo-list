@@ -23,9 +23,12 @@
 
   <div id="descriptionModal" class="hidden">
     <div class="modal-content">
-      <textarea id="descriptionText" rows="5" cols="40" placeholder="Write a description here..."></textarea>
-      <button onclick="saveDescription()">Save</button>
-      <button onclick="closeModal()">Close</button>
+      <textarea id="descriptionText" placeholder="Write your description here...
+    You can add text, images, lists, and links!"></textarea>
+      <div class="modal-buttons">
+        <button onclick="saveDescription()" class="modal-btn modal-btn-save">Save Description</button>
+        <button onclick="closeModal()" class="modal-btn modal-btn-close">Cancel</button>
+      </div>
     </div>
   </div>
 
