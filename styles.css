@@ -1,7 +1,42 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: black; 
-  color: white; 
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #0f0f0f 100%);
+  color: white;
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  position: relative;
+}
+
+.main-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 20px 0;
+}
+
+.main-title {
+  font-size: 3rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #4a9eff, #00d4ff, #4a9eff);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 3s ease-in-out infinite;
+  margin: 0;
+  text-shadow: 0 0 30px rgba(74, 158, 255, 0.3);
+}
+
+.main-subtitle {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 10px;
+  font-weight: 300;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 ul::before, li::before {
@@ -9,15 +44,212 @@ ul::before, li::before {
 }
 
 button {
-    background-color: white;
-    color: black;
-    border: 1px solid black;
+    background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
     position: relative;
     z-index: 2;
+    font-family: inherit;
+    font-weight: 500;
+}
+
+button:hover {
+    background: linear-gradient(145deg, #4a4a4a, #3a3a3a);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Task-specific button styles */
+.btn-toggle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    background: linear-gradient(145deg, #4a9eff, #357abd);
+    border: 1px solid rgba(74, 158, 255, 0.3);
+}
+
+.btn-toggle:hover {
+    background: linear-gradient(145deg, #5badff, #4a9eff);
+    box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+}
+
+.btn-toggle:disabled {
+    background: linear-gradient(145deg, #333, #222);
+    color: rgba(255, 255, 255, 0.3);
+    cursor: not-allowed;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-toggle:disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Remove task button */
+li button:nth-child(2) {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    padding: 0;
+    background: linear-gradient(145deg, #ff4757, #d63031);
+    border: 1px solid rgba(255, 71, 87, 0.3);
+    font-size: 14px;
+}
+
+li button:nth-child(2):hover {
+    background: linear-gradient(145deg, #ff6b7a, #ff4757);
+    box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+}
+
+/* Description button */
+li button:nth-child(5) {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    padding: 0;
+    background: linear-gradient(145deg, #ffa726, #f57c00);
+    border: 1px solid rgba(255, 167, 38, 0.3);
+    font-size: 14px;
+}
+
+li button:nth-child(5):hover {
+    background: linear-gradient(145deg, #ffb74d, #ffa726);
+    box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3);
+}
+
+/* Add subtask button */
+li button:nth-child(6) {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    padding: 0;
+    background: linear-gradient(145deg, #26c281, #00b894);
+    border: 1px solid rgba(38, 194, 129, 0.3);
+    font-size: 16px;
+    font-weight: bold;
+}
+
+li button:nth-child(6):hover {
+    background: linear-gradient(145deg, #55efc4, #26c281);
+    box-shadow: 0 4px 12px rgba(38, 194, 129, 0.3);
+}
+
+/* Floating Add Task Button */
+.floating-add-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4a9eff, #00d4ff);
+    color: white;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 
+        0 8px 25px rgba(74, 158, 255, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.floating-add-btn:hover {
+    transform: scale(1.1) translateY(-3px);
+    box-shadow: 
+        0 12px 35px rgba(74, 158, 255, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, #5badff, #26c6da);
+}
+
+.floating-add-btn:active {
+    transform: scale(1.05) translateY(-1px);
+    box-shadow: 
+        0 6px 20px rgba(74, 158, 255, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Pulse animation for floating button */
+.floating-add-btn::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4a9eff, #00d4ff);
+    z-index: -1;
+    opacity: 0;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.3;
+        transform: scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.4);
+    }
 }
 
 input[type="checkbox"] {
-    filter: invert(1);
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+input[type="checkbox"]:hover {
+    border-color: rgba(74, 158, 255, 0.6);
+    box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.2);
+}
+
+input[type="checkbox"]:checked {
+    background: linear-gradient(135deg, #4a9eff, #357abd);
+    border-color: #4a9eff;
+    box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.3);
+}
+
+input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
 }
 
 .task { margin-left: 10px; }
@@ -34,12 +266,12 @@ ul {
 ul:not(#taskList)::before {
     content: "";
     position: absolute;
-    top: -19px;
-    left: -5px;
+    top: -26px;
+    left: 4px;
     width: 2px;
     height: 100%;
-    background-color: #ccc;
-    z-index: 1;
+    background-color: rgba(255, 255, 255, 0.3);
+    z-index: 0;
 }
 
 li {
@@ -50,11 +282,12 @@ li {
 li:not(.main-task)::before {
     content: "";
     position: absolute;
-    top: 18px;
-    left: -9px;
-    width: 20px;
+    top: 20px;
+    left: -15px;
+    width: 30px;
     height: 2px;
-    background-color: #ccc;
+    background-color: rgba(255, 255, 255, 0.3);
+    z-index: 0;
 }
 
 #descriptionModal {
@@ -214,13 +447,15 @@ li:not(.main-task)::before {
 
 .hidden { display: none; }
 
-.task-description {
-  margin-left: 5px;
-  padding: 5px;
-  border-left: 2px solid #ccc;
-  font-size: 0.9em;
-  background: rgba(255, 255, 255, 0.1);
-  max-width: 80%;
+/* Modern container for the entire app */
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+#taskList {
+  margin-bottom: 100px; /* Space for floating button */
 }
 
 .task-description ul {
@@ -357,23 +592,98 @@ li:not(.main-task)::before {
 }
 
 li.main-task, li.subtask {
-  border: 1px solid #888;
-  background: #181818;
-  border-radius: 6px;
-  margin: 0px 0 0px 4px;
-  padding: 8px 4px;
-  transition: box-shadow 0.2s;
-  box-shadow: 0 2px 6px #0004;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+  border-radius: 8px;
+  margin: 4px 0;
+  padding: 6px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   position: relative;
+  backdrop-filter: blur(10px);
+  will-change: transform, box-shadow;
+  z-index: 2;
 }
+
 li.main-task {
-  background: #222;
+  background: linear-gradient(145deg, #2d2d2d, #1d1d1d);
+  border-color: rgba(255, 255, 255, 0.15);
+  margin: 6px 0;
 }
+
 li.subtask {
-  background: #181818;
+  background: linear-gradient(145deg, #252525, #151515);
+  margin: 3px 0 3px 20px;
 }
+
+li.main-task:hover, li.subtask:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(74, 158, 255, 0.3);
+}
+
 li.dragging {
-  opacity: 0.6;
-  box-shadow: 0 0 0 2px #fff, 0 4px 12px #0008;
+  opacity: 0.8;
+  transform: scale(1.05) rotate(2deg);
+  box-shadow: 
+    0 0 0 2px rgba(74, 158, 255, 0.8),
+    0 15px 35px rgba(0, 0, 0, 0.5);
   z-index: 3;
+}
+
+/* Task content layout */
+li.main-task > *:not(.task-description):not(.subtasks), 
+li.subtask > *:not(.task-description):not(.subtasks) {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+li.main-task span[contenteditable], li.subtask span[contenteditable] {
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 6px 8px;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+  font-size: 16px;
+  line-height: 1.4;
+  min-width: 200px;
+  color: inherit;
+}
+
+li.main-task span[contenteditable]:focus, li.subtask span[contenteditable]:focus {
+  background: rgba(74, 158, 255, 0.1);
+  box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.3);
+}
+
+.task-description {
+  margin: 8px 0 4px 0;
+  padding: 12px;
+  border-left: 3px solid #4a9eff;
+  border-radius: 6px;
+  font-size: 14px;
+  background: rgba(74, 158, 255, 0.05);
+  backdrop-filter: blur(5px);
+  max-width: 100%;
+  overflow-wrap: break-word;
+  position: relative;
+  z-index: 3;
+}
+
+.task-description a {
+  color: #4a9eff;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.task-description a:hover {
+  color: #5badff;
+  text-decoration: underline;
 }

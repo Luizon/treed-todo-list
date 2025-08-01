@@ -9,13 +9,11 @@ function openModal(button) {
   modal.classList.remove("hidden");
   modal.classList.add("show");
 
-  // Focus the textarea after animation starts
   setTimeout(() => {
     descriptionText.focus();
     descriptionText.setSelectionRange(descriptionText.value.length, descriptionText.value.length);
   }, 100);
 
-  // Close modal when clicking outside of it
   modal.onclick = (e) => {
     if (e.target === modal) {
       closeModal();

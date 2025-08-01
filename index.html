@@ -7,19 +7,24 @@
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-  <h2>Simple TO-DO List</h2>
+  <div class="app-container">
+    <div class="main-header">
+      <h1 class="main-title">Simple TO-DO List</h1>
+      <p class="main-subtitle">Because everyone has stuff to-do</p>
+    </div>
 
-  <textarea id="textInput" rows="10" cols="50" placeholder="[ ] Example main task
+    <textarea id="textInput" rows="10" cols="50" placeholder="[ ] Example main task
 	[ ] task 2 [Description: IMPORTANT:\ncheck task 5]
 		[ ] task 4
 		[ ] task 5
 	[x] task 3" hidden></textarea>
-  <br>
-    <button onclick="processList()" hidden>Process List</button>
-    <button onclick="exportList()" hidden>Export List to text</button>
-    <ul id="taskList"></ul>
+    <br>
+      <button onclick="processList()" hidden>Process List</button>
+      <button onclick="exportList()" hidden>Export List to text</button>
+      <ul id="taskList"></ul>
+  </div>
 
-  <button onclick="addTask()">Add main task</button>
+  <button onclick="addTask()" class="floating-add-btn" title="Add new task">+</button>
 
   <div id="descriptionModal" class="hidden">
     <div class="modal-content">
