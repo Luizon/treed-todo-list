@@ -262,15 +262,26 @@ ul {
     position: relative;
 }
 
-ul:not(#taskList)::before {
-    content: "";
+@keyframes fade-in-tree-line {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.tree-line-vertical {
     position: absolute;
     top: -10px;
     left: 4px;
     width: 2px;
-    height: var(--line-height, 100%);
     background-color: rgba(255, 255, 255, 0.3);
     z-index: 0;
+    pointer-events: none;
 }
 
 li {
@@ -278,8 +289,7 @@ li {
     padding-left: 15px;
 }
 
-li:not(.main-task)::before {
-    content: "";
+.tree-line-horizontal {
     position: absolute;
     top: 20px;
     left: -15px;
@@ -287,6 +297,7 @@ li:not(.main-task)::before {
     height: 2px;
     background-color: rgba(255, 255, 255, 0.3);
     z-index: 0;
+    pointer-events: none;
 }
 
 #descriptionModal {

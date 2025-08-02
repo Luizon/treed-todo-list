@@ -87,6 +87,8 @@ function processList() {
     while (stack[stack.length - 1].level >= level) stack.pop();
     stack[stack.length - 1].element.appendChild(li);
     stack.push({ element: li.querySelector(".subtasks"), level });
+    window.observer.observe(li.querySelector("ul.subtasks"));
+    window.addTreeLines(li);
 
     setTimeout(() => {
       const toggleButton = li.querySelector(".btn-toggle");
@@ -105,6 +107,11 @@ function processList() {
       }
     }, 10);
   });
+  
+  window.animateReapearTreeLines();
+  setTimeout(() => {
+    window.updateAllTreeLines();
+  }, 500);
 }
 
 window.exportList = exportList;

@@ -1,3 +1,16 @@
+const observer = new ResizeObserver(entries => {
+  for (const entry of entries) {
+    const el = entry.target;
+    
+    updateTreeLineHeight(el);
+    
+    animateReapearTreeLines()
+    setTimeout(() => {
+      updateAllTreeLines();
+    }, 500);
+  }
+});
+
 function replaceURLsWithContent(text) {
   const urlRegex = /\b(https?:\/\/[^\s\n\t]+)\b/g;
 
@@ -130,6 +143,94 @@ function hideInsertionLine() {
   if (window.insertionLine) window.insertionLine.style.display = "none";
 }
 
+// Tree line management functions
+function addTreeLines(taskElement) {
+  // Add horizontal line for subtasks
+  if (taskElement.classList.contains('subtask')) {
+    if (!taskElement.querySelector('.tree-line-horizontal')) {
+      const horizontalLine = document.createElement('div');
+      horizontalLine.className = 'tree-line-horizontal';
+      taskElement.appendChild(horizontalLine);
+    }
+  }
+  
+  // Add vertical line for nested ul elements
+  const subtasksList = taskElement.querySelector('.subtasks');
+  if (subtasksList && subtasksList.id !== 'taskList') {
+    if (!subtasksList.querySelector('.tree-line-vertical')) {
+      const verticalLine = document.createElement('div');
+      verticalLine.className = 'tree-line-vertical';
+      subtasksList.appendChild(verticalLine);
+    }
+  }
+}
+
+function updateTreeLineHeight(ulElement) {
+  if (!ulElement || ulElement.id === 'taskList') return;
+  
+  const verticalLine = ulElement.querySelector('.tree-line-vertical');
+  if (verticalLine) {
+    // Calculate the height based on the visible content
+    const lastChild = Array.from(ulElement.children).filter(
+      child => child.tagName === 'LI'
+    ).pop();
+    
+    if (lastChild) {
+      const ulRect = ulElement.getBoundingClientRect();
+      const lastChildRect = lastChild.getBoundingClientRect();
+      console.log(lastChildRect)
+      const height = (lastChildRect.top - ulRect.top + 33);
+      verticalLine.style.height = Math.max(height, 0) + 'px';
+    } else {
+      verticalLine.style.height = '0px';
+    }
+  }
+}
+
+function removeTreeLines(taskElement) {
+  const horizontalLine = taskElement.querySelector('.tree-line-horizontal');
+  if (horizontalLine) {
+    horizontalLine.remove();
+  }
+  
+  const subtasksList = taskElement.querySelector('.subtasks');
+  if (subtasksList) {
+    const verticalLine = subtasksList.querySelector('.tree-line-vertical');
+    if (verticalLine) {
+      verticalLine.remove();
+    }
+  }
+}
+
+function updateAllTreeLines() {
+  document.querySelectorAll('ul.subtasks').forEach(ul => {
+    if (ul.id !== 'taskList') {
+      updateTreeLineHeight(ul);
+    }
+  });
+}
+
+function animateReapearTreeLines() {
+  const checkedId = Math.random();
+  document.querySelectorAll('ul.subtasks').forEach(ul => {
+    if (ul.id !== 'taskList') {
+      const verticalLine = ul.querySelector('.tree-line-vertical');
+      if(verticalLine) {
+        verticalLine.style.animation = "none";
+        verticalLine.style.animation = "fade-in-tree-line 1s ease-out forwards";
+      }
+      ul.querySelectorAll('.tree-line-horizontal').forEach(horizontalLine => {
+        // const horizontalLine = li.;
+        if(horizontalLine && horizontalLine.getAttribute('checkeId') != checkedId ) {
+          horizontalLine.setAttribute('checkeId', checkedId);
+          horizontalLine.style.animation = "none";
+          horizontalLine.style.animation = "fade-in-tree-line 1s ease-out forwards";
+        }
+      });
+    }
+  });
+}
+
 function maximize(sublist, description) {
   sublist.style.animation = "none";
   void sublist.offsetWidth;
@@ -145,13 +246,23 @@ function maximize(sublist, description) {
     description.style.animation = "fadeInDescription 0.3s ease-out forwards";
     description.classList.remove("hidden");
   }
+  
+  animateReapearTreeLines();
+  setTimeout(() => {
+    updateTreeLineHeight(sublist);
+    updateAllTreeLines();
+  }, 500);
 }
 
 function minimize(sublist, description) {
   sublist.style.animation = "none";
   void sublist.offsetWidth;
   sublist.style.animation = "fadeOutSubtasks 0.3s ease-out forwards";
-  setTimeout(() => sublist.classList.add("hidden"), 300);
+  animateReapearTreeLines()
+  setTimeout(() => {
+    sublist.classList.add("hidden");
+    updateAllTreeLines();
+  }, 500);
 
   const toggleButton = sublist.parentElement.querySelector(".btn-toggle");
   toggleButton.textContent = "▶";
@@ -171,3 +282,14 @@ window.maximize = maximize;
 window.minimize = minimize;
 window.replaceURLsWithContent = replaceURLsWithContent;
 window.processLists = processLists; 
+window.addTreeLines = addTreeLines;
+window.updateTreeLineHeight = updateTreeLineHeight;
+window.removeTreeLines = removeTreeLines;
+window.updateAllTreeLines = updateAllTreeLines;
+
+window.addEventListener('resize', () => {
+  animateReapearTreeLines()
+  setTimeout(updateAllTreeLines, 500);
+});
+
+window.observer = observer; 
