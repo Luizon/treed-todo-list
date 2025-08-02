@@ -143,9 +143,7 @@ function hideInsertionLine() {
   if (window.insertionLine) window.insertionLine.style.display = "none";
 }
 
-// Tree line management functions
 function addTreeLines(taskElement) {
-  // Add horizontal line for subtasks
   if (taskElement.classList.contains('subtask')) {
     if (!taskElement.querySelector('.tree-line-horizontal')) {
       const horizontalLine = document.createElement('div');
@@ -154,7 +152,6 @@ function addTreeLines(taskElement) {
     }
   }
   
-  // Add vertical line for nested ul elements
   const subtasksList = taskElement.querySelector('.subtasks');
   if (subtasksList && subtasksList.id !== 'taskList') {
     if (!subtasksList.querySelector('.tree-line-vertical')) {
@@ -170,7 +167,6 @@ function updateTreeLineHeight(ulElement) {
   
   const verticalLine = ulElement.querySelector('.tree-line-vertical');
   if (verticalLine) {
-    // Calculate the height based on the visible content
     const lastChild = Array.from(ulElement.children).filter(
       child => child.tagName === 'LI'
     ).pop();

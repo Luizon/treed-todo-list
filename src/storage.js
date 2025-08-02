@@ -83,12 +83,13 @@ function processList() {
     `;
 
     window.addTaskEventListeners(li);
+    window.addTreeLines(li);
 
     while (stack[stack.length - 1].level >= level) stack.pop();
     stack[stack.length - 1].element.appendChild(li);
     stack.push({ element: li.querySelector(".subtasks"), level });
     window.observer.observe(li.querySelector("ul.subtasks"));
-    window.addTreeLines(li);
+
 
     setTimeout(() => {
       const toggleButton = li.querySelector(".btn-toggle");
@@ -100,18 +101,13 @@ function processList() {
       }
 
       // disable the toggle button if there are no subtasks and no description
-      const hasSubtasks = li.querySelector(".subtasks").children.length > 0;
+      const hasSubtasks = li.querySelector(".subtasks").children.length > 1;
       if (!hasSubtasks && description.trim() === "") {
         toggleButton.disabled = true;
         toggleButton.style.color = "#0000";
       }
     }, 10);
   });
-  
-  window.animateReapearAllTreeLines();
-  setTimeout(() => {
-    window.updateAllTreeLines();
-  }, 500);
 }
 
 window.exportList = exportList;

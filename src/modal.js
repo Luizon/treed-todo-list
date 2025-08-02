@@ -44,7 +44,7 @@ function saveDescription() {
       descElement.classList.add("hidden");
 
     const toggleButton = currentTaskElement.querySelector(".btn-toggle");
-    const hasSubtasks = currentTaskElement.querySelector(".subtasks").children.length > 0;
+    const hasSubtasks = currentTaskElement.querySelector(".subtasks").children.length > 1;
     toggleButton.disabled = !hasSubtasks && rawText === "";
     toggleButton.style.color = toggleButton.disabled ? "#0000" : "#000f";
 

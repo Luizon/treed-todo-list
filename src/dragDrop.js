@@ -91,7 +91,7 @@ function setupDragAndDrop(li) {
       }
       if (window.lastParent) {
         window.validateParentOnRemove(window.lastParent);
-        const hasSubtasks = window.lastParent.querySelector(".subtasks").children.length > 0;
+        const hasSubtasks = window.lastParent.querySelector(".subtasks").children.length > 1;
         const hasDescription = window.lastParent.getAttribute("data-description").trim() !== "";
         const toggleButton = window.lastParent.querySelector(".btn-toggle");
         toggleButton.disabled = !hasSubtasks && !hasDescription;

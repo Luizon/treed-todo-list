@@ -79,7 +79,7 @@ function removeTask(button) {
     window.updateAllTreeLines();
     
     if (parentTask) {
-      const hasSubtasks = parentTask.querySelector(".subtasks").children.length > 0;
+      const hasSubtasks = parentTask.querySelector(".subtasks").children.length > 1;
       const hasDescription = parentTask.getAttribute("data-description").trim() !== "";
       const toggleButton = parentTask.querySelector(".btn-toggle");
       toggleButton.disabled = !hasSubtasks && !hasDescription;
