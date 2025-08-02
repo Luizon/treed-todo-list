@@ -47,7 +47,7 @@ function addTask(text = "New task", parent = document.getElementById("taskList")
   selection.removeAllRanges();
   selection.addRange(range);
 
-  window.animateReapearTreeLines();
+  window.animateReapearAllTreeLines();
   setTimeout(() => {
     window.updateTreeLineHeight(parent);
     window.updateAllTreeLines();
@@ -68,7 +68,7 @@ function removeTask(button) {
   taskElement.classList.add("removing");
   window.removeTreeLines(taskElement);
   
-  window.animateReapearTreeLines();
+  window.animateReapearAllTreeLines();
   setTimeout(() => {
     const parentTask = taskElement.parentElement.closest("li");
     const parentUl = taskElement.parentElement;

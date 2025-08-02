@@ -4,7 +4,7 @@ const observer = new ResizeObserver(entries => {
     
     updateTreeLineHeight(el);
     
-    animateReapearTreeLines()
+    animateReapearAllTreeLines()
     setTimeout(() => {
       updateAllTreeLines();
     }, 500);
@@ -178,7 +178,6 @@ function updateTreeLineHeight(ulElement) {
     if (lastChild) {
       const ulRect = ulElement.getBoundingClientRect();
       const lastChildRect = lastChild.getBoundingClientRect();
-      console.log(lastChildRect)
       const height = (lastChildRect.top - ulRect.top + 33);
       verticalLine.style.height = Math.max(height, 0) + 'px';
     } else {
@@ -210,23 +209,22 @@ function updateAllTreeLines() {
   });
 }
 
-function animateReapearTreeLines() {
+function animateReapearAllTreeLines() {
   const checkedId = Math.random();
-  document.querySelectorAll('ul.subtasks').forEach(ul => {
-    if (ul.id !== 'taskList') {
-      const verticalLine = ul.querySelector('.tree-line-vertical');
-      if(verticalLine) {
-        verticalLine.style.animation = "none";
-        verticalLine.style.animation = "fade-in-tree-line 1s ease-out forwards";
-      }
-      ul.querySelectorAll('.tree-line-horizontal').forEach(horizontalLine => {
-        // const horizontalLine = li.;
-        if(horizontalLine && horizontalLine.getAttribute('checkeId') != checkedId ) {
-          horizontalLine.setAttribute('checkeId', checkedId);
-          horizontalLine.style.animation = "none";
-          horizontalLine.style.animation = "fade-in-tree-line 1s ease-out forwards";
-        }
-      });
+  document.querySelectorAll('.tree-line-vertical').forEach(verticalLine => {
+    if(verticalLine.getAttribute('checkeId') != checkedId ) {
+      verticalLine.setAttribute('checkeId', checkedId);
+      verticalLine.style.animation = "none";
+      void verticalLine.offsetWidth; // Force reflow
+      verticalLine.style.animation = "fade-in-tree-line 1s ease-out forwards";
+    }
+  });
+  document.querySelectorAll('.tree-line-horizontal').forEach(horizontalLine => {
+    if(horizontalLine.getAttribute('checkeId') != checkedId ) {
+      horizontalLine.setAttribute('checkeId', checkedId);
+      horizontalLine.style.animation = "none";
+      void horizontalLine.offsetWidth; // Force reflow
+      horizontalLine.style.animation = "fade-in-tree-line 1s ease-out forwards";
     }
   });
 }
@@ -247,7 +245,7 @@ function maximize(sublist, description) {
     description.classList.remove("hidden");
   }
   
-  animateReapearTreeLines();
+  animateReapearAllTreeLines();
   setTimeout(() => {
     updateTreeLineHeight(sublist);
     updateAllTreeLines();
@@ -258,7 +256,7 @@ function minimize(sublist, description) {
   sublist.style.animation = "none";
   void sublist.offsetWidth;
   sublist.style.animation = "fadeOutSubtasks 0.3s ease-out forwards";
-  animateReapearTreeLines()
+  animateReapearAllTreeLines()
   setTimeout(() => {
     sublist.classList.add("hidden");
     updateAllTreeLines();
@@ -288,7 +286,7 @@ window.removeTreeLines = removeTreeLines;
 window.updateAllTreeLines = updateAllTreeLines;
 
 window.addEventListener('resize', () => {
-  animateReapearTreeLines()
+  animateReapearAllTreeLines()
   setTimeout(updateAllTreeLines, 500);
 });
 

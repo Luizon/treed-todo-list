@@ -108,7 +108,7 @@ function processList() {
     }, 10);
   });
   
-  window.animateReapearTreeLines();
+  window.animateReapearAllTreeLines();
   setTimeout(() => {
     window.updateAllTreeLines();
   }, 500);
