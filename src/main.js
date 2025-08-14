@@ -13,14 +13,9 @@ document.addEventListener("keydown", event => {
   }
 });
 
-document.getElementById("textInput").addEventListener("input", () => {
-  localStorage.setItem("savedText", document.getElementById("textInput").value);
-});
-
 document.addEventListener("DOMContentLoaded", () => {
   const savedText = localStorage.getItem("savedText");
   if (savedText) {
-    document.getElementById("textInput").value = savedText;
     window.processList();
   }
 });

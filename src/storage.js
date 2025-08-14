@@ -1,4 +1,4 @@
-function exportList() { // this function is usefull rn cause that input is hidden. It's here just because I can export the text as a file later, I just haven't done that implementation yet.
+function exportList() { // Export function ready for future file download implementation
   const output = [];
   
   function traverseList(element, level = 0) {
@@ -23,13 +23,12 @@ function exportList() { // this function is usefull rn cause that input is hidde
 
   traverseList(document.getElementById("taskList"));
   
-  const textarea = document.getElementById("textInput");
-  textarea.value = output.join("\n");
+  // Store directly in LocalStorage instead of textarea
+  localStorage.setItem("savedText", output.join("\n"));
 }
 
 function saveToLocalStorage() {
   exportList();
-  localStorage.setItem("savedText", document.getElementById("textInput").value);
 }
 
 function processList() {
@@ -38,8 +37,13 @@ function processList() {
   void taskList.offsetWidth;
   taskList.style.animation = "fadeIn 0.5s ease-out forwards";
 
-  const text = document.getElementById("textInput").value
-      || document.getElementById("textInput").placeholder;
+  // Get text from LocalStorage instead of textarea
+  const text = localStorage.getItem("savedText") || `[ ] Example main task
+	[ ] task 2 [Description: IMPORTANT:\ncheck task 5]
+		[ ] task 4
+		[ ] task 5
+	[x] task 3`;
+  
   const lines = text.split("\n").filter(line => line.trim() !== "");
   const root = document.getElementById("taskList");
   root.innerHTML = "";
@@ -69,6 +73,7 @@ function processList() {
     const taskType = level === 0 ? "main-task" : "subtask";
     li.classList.add(taskType);
     li.style.setProperty('--level', level);
+
     li.setAttribute("data-description", description);
 
     li.innerHTML = `
@@ -90,7 +95,6 @@ function processList() {
     stack.push({ element: li.querySelector(".subtasks"), level });
     window.observer.observe(li.querySelector("ul.subtasks"));
 
-
     setTimeout(() => {
       const toggleButton = li.querySelector(".btn-toggle");
 
@@ -102,6 +106,7 @@ function processList() {
 
       // disable the toggle button if there are no subtasks and no description
       const hasSubtasks = li.querySelector(".subtasks").children.length > 1;
+      const description = li.getAttribute("data-description") || "";
       if (!hasSubtasks && description.trim() === "") {
         toggleButton.disabled = true;
         toggleButton.style.color = "#0000";
