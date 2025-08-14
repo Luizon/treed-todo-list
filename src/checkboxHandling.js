@@ -30,8 +30,6 @@ function handleCheckboxChange(checkbox) {
   if (!checkbox.checked && parentTask) {
     uncheckParentHierarchy(parentTask);
   }
-
-  window.saveToLocalStorage();
 }
 
 function checkParentHierarchy(task) {

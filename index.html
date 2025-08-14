@@ -17,9 +17,33 @@
     <ul id="taskList"></ul>
   </div>
 
-  <button onclick="addTask()" class="floating-add-btn" title="Add new task">+</button>
+  <div class="fab-container" id="fabContainer">
+    <button id="fabButton" class="floating-add-btn" title="Menu">☰</button>
+    <div class="fab-menu" id="fabMenuPanel">
+      <button id="menuAddMain">➕ Add Main Task</button>
+      <button id="menuQuickSave">💾 Quick Save</button>
+      <button id="menuSaveFile">⬇️ Save to File</button>
+      <button id="menuLoadFile">⬆️ Load from File</button>
+      <button id="menuClearAll" class="danger">🗑️ Clear All</button>
+    </div>
+    <input type="file" id="fileLoader" accept=".txt,text/plain" class="hidden">
+  </div>
 
-  <div id="descriptionModal" class="hidden">
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Modals -->
+  <div id="confirmClearModal" class="modal hidden">
+    <div class="modal-content confirm-modal">
+      <h2>⚠️ Clear All Tasks?</h2>
+      <p>This will delete your entire lists. This action cannot be undone.</p>
+      <div class="modal-buttons">
+        <button onclick="confirmClear()" class="modal-btn modal-btn-danger">Clear everything</button>
+        <button onclick="closeConfirmModal()" class="modal-btn modal-btn-close">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="descriptionModal" class="modal hidden">
     <div class="modal-content">
       <textarea id="descriptionText" placeholder="Write your description here...
     You can add text, images, lists, and links!"></textarea>
@@ -29,7 +53,6 @@
       </div>
     </div>
   </div>
-
 
   <script src="./src/utils.js"></script>
   <script src="./src/checkboxHandling.js"></script>

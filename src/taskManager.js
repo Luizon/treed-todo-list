@@ -20,11 +20,10 @@ function addTask(text = "New task", parent = document.getElementById("taskList")
   
   addTaskEventListeners(li);
   window.observer.observe(li.querySelector("ul.subtasks"));
-  window.addTreeLines(li);
 
   if(level > 0) {
     parent.parentElement.querySelector(".btn-toggle").disabled = false;
-    parent.parentElement.querySelector(".btn-toggle").style.color = "#000F";
+    parent.parentElement.querySelector(".btn-toggle").style.color = "";
     if(parent.classList.contains("hidden")) {
       window.maximize(parent, parent.parentElement.querySelector(".task-description"));
     }
@@ -46,14 +45,6 @@ function addTask(text = "New task", parent = document.getElementById("taskList")
   const selection = window.getSelection();
   selection.removeAllRanges();
   selection.addRange(range);
-
-  window.animateReapearAllTreeLines();
-  setTimeout(() => {
-    window.updateTreeLineHeight(parent);
-    window.updateAllTreeLines();
-  }, 500);
-
-  window.saveToLocalStorage();
 }
 
 function removeTask(button) {
@@ -66,36 +57,25 @@ function removeTask(button) {
   taskElement.style.animation = "fadeOutTask 0.4s ease-out forwards";
 
   taskElement.classList.add("removing");
-  window.removeTreeLines(taskElement);
   
-  window.animateReapearAllTreeLines();
   setTimeout(() => {
     const parentTask = taskElement.parentElement.closest("li");
-    const parentUl = taskElement.parentElement;
 
     taskElement.remove();
     
-    window.updateTreeLineHeight(parentUl);
-    window.updateAllTreeLines();
-    
     if (parentTask) {
-      const hasSubtasks = parentTask.querySelector(".subtasks").children.length > 1;
+      const hasSubtasks = parentTask.querySelector(".subtasks").children.length > 0;
       const hasDescription = parentTask.getAttribute("data-description").trim() !== "";
       const toggleButton = parentTask.querySelector(".btn-toggle");
       toggleButton.disabled = !hasSubtasks && !hasDescription;
-      toggleButton.style.color = toggleButton.disabled ? "#0000" : "#000f";
+      toggleButton.style.color = toggleButton.disabled ? "#0000" : "";
 
       window.validateParentOnRemove(parentTask);
     }
-
-    window.saveToLocalStorage();
   }, 400);
 }
 
 function addTaskEventListeners(li) {
-  li.querySelector("input[type='checkbox']").addEventListener("change", (e) => window.handleCheckboxChange(li.querySelector("input[type='checkbox']")) );
-  li.querySelector("span").addEventListener("input", (e) => window.saveToLocalStorage() );
-
   window.setupDragAndDrop(li);
 }
 

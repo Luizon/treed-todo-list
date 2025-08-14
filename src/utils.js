@@ -1,16 +1,3 @@
-const observer = new ResizeObserver(entries => {
-  for (const entry of entries) {
-    const el = entry.target;
-    
-    updateTreeLineHeight(el);
-    
-    animateReapearAllTreeLines()
-    setTimeout(() => {
-      updateAllTreeLines();
-    }, 500);
-  }
-});
-
 function replaceURLsWithContent(text) {
   const urlRegex = /\b(https?:\/\/[^\s\n\t]+)\b/g;
 
@@ -27,97 +14,49 @@ function replaceURLsWithContent(text) {
 
 function processLists(text) {
   const lines = text.split('\n');
-  const result = [];
-  let currentListHtml = '';
-  let listStack = [];
-  let inListMode = false;
-  
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const listMatch = line.match(/^(\s*)-\s*(.+)$/);
-    
-    if (listMatch) {
-      const indentLevel = Math.floor(listMatch[1].length / 2);
-      const content = listMatch[2];
-      
-      if (!inListMode) {
-        // Starting a new list
-        inListMode = true;
-        currentListHtml = '';
-        listStack = [];
-      }
-      
-      // Close deeper nested lists
-      while (listStack.length > indentLevel + 1) {
-        currentListHtml += '</ul>';
-        listStack.pop();
-      }
-      
-      // Open new nested list if needed
-      if (listStack.length === indentLevel) {
-        currentListHtml += '<ul>';
-        listStack.push(indentLevel);
-      }
-      
-      // Add the list item
-      currentListHtml += `<li>${content}</li>`;
-      
-    } else {
-      // Not a list item - close any open lists and add to result
-      if (inListMode) {
-        // Close all open lists
-        while (listStack.length > 0) {
-          currentListHtml += '</ul>';
-          listStack.pop();
-        }
-        result.push(currentListHtml);
-        inListMode = false;
-        currentListHtml = '';
-      }
-      
-      // Add non-list content
-      if (line.trim() !== '' || result.length === 0) {
-        result.push(line);
-      }
-    }
-  }
-  
-  // Close any remaining open lists at the end
-  if (inListMode) {
-    while (listStack.length > 0) {
-      currentListHtml += '</ul>';
-      listStack.pop();
-    }
-    result.push(currentListHtml);
-  }
-  
-  return result.join('\n');
-}
+  const html = [];
+  const listStack = []; // stack of indents for open <ul>
 
-function openFullscreen(img) {
-  let modal = document.getElementById("fullscreen-modal");
-
-  if (!modal) {
-    modal = document.createElement("div");
-    modal.id = "fullscreen-modal";
-    modal.classList.add("modal-img");
-    const modalImg = document.createElement("img");
-    modal.appendChild(modalImg);
-    document.body.appendChild(modal);
-
-    document.addEventListener( "keydown", event => {
-      if( event.key === "Escape" ) {
-        modal.style.display = "none";
-      }
-    })
-  }
-
-  modal.style.display = "flex";
-  modal.querySelector("img").src = img.src;
-
-  modal.onclick = () => {
-    modal.style.display = "none";
+  const openUl = (indent) => {
+    html.push('<ul>');
+    listStack.push(indent);
   };
+  const closeUl = () => {
+    html.push('</ul>');
+    listStack.pop();
+  };
+  const topIndent = () => (listStack.length ? listStack[listStack.length - 1] : -1);
+
+  for (let raw of lines) {
+    const line = raw.replace(/\r$/, '');
+    const liMatch = line.match(/^(\s*)[-*]\s+(.+)$/);
+
+    if (liMatch) {
+      const indent = liMatch[1].length;
+      const content = liMatch[2];
+
+      // Close lists only if we're going shallower
+      while (listStack.length && indent < topIndent()) {
+        closeUl();
+      }
+      // Open a new list if we're going deeper or there is no list yet
+      if (!listStack.length || indent > topIndent()) {
+        openUl(indent);
+      }
+      // Same indent: continue current <ul>
+      html.push(`<li>${content}</li>`);
+    } else {
+      // Non-list line: close all open lists and keep the line with a newline
+      while (listStack.length) closeUl();
+      html.push(line + '\n');
+    }
+  }
+
+  // Close any remaining lists
+  while (listStack.length) closeUl();
+
+  // Join without extra newlines so later \n -> <br> doesn't split list markup
+  return html.join('');
 }
 
 function showInsertionLine(li, position) {
@@ -143,88 +82,6 @@ function hideInsertionLine() {
   if (window.insertionLine) window.insertionLine.style.display = "none";
 }
 
-function addTreeLines(taskElement) {
-  if (taskElement.classList.contains('subtask')) {
-    if (!taskElement.querySelector('.tree-line-horizontal')) {
-      const horizontalLine = document.createElement('div');
-      horizontalLine.className = 'tree-line-horizontal';
-      taskElement.appendChild(horizontalLine);
-    }
-  }
-  
-  const subtasksList = taskElement.querySelector('.subtasks');
-  if (subtasksList && subtasksList.id !== 'taskList') {
-    if (!subtasksList.querySelector('.tree-line-vertical')) {
-      const verticalLine = document.createElement('div');
-      verticalLine.className = 'tree-line-vertical';
-      subtasksList.appendChild(verticalLine);
-    }
-  }
-}
-
-function updateTreeLineHeight(ulElement) {
-  if (!ulElement || ulElement.id === 'taskList') return;
-  
-  const verticalLine = ulElement.querySelector('.tree-line-vertical');
-  if (verticalLine) {
-    const lastChild = Array.from(ulElement.children).filter(
-      child => child.tagName === 'LI'
-    ).pop();
-    
-    if (lastChild) {
-      const ulRect = ulElement.getBoundingClientRect();
-      const lastChildRect = lastChild.getBoundingClientRect();
-      const height = (lastChildRect.top - ulRect.top + 33);
-      verticalLine.style.height = Math.max(height, 0) + 'px';
-    } else {
-      verticalLine.style.height = '0px';
-    }
-  }
-}
-
-function removeTreeLines(taskElement) {
-  const horizontalLine = taskElement.querySelector('.tree-line-horizontal');
-  if (horizontalLine) {
-    horizontalLine.remove();
-  }
-  
-  const subtasksList = taskElement.querySelector('.subtasks');
-  if (subtasksList) {
-    const verticalLine = subtasksList.querySelector('.tree-line-vertical');
-    if (verticalLine) {
-      verticalLine.remove();
-    }
-  }
-}
-
-function updateAllTreeLines() {
-  document.querySelectorAll('ul.subtasks').forEach(ul => {
-    if (ul.id !== 'taskList') {
-      updateTreeLineHeight(ul);
-    }
-  });
-}
-
-function animateReapearAllTreeLines() {
-  const checkedId = Math.random();
-  document.querySelectorAll('.tree-line-vertical').forEach(verticalLine => {
-    if(verticalLine.getAttribute('checkeId') != checkedId ) {
-      verticalLine.setAttribute('checkeId', checkedId);
-      verticalLine.style.animation = "none";
-      void verticalLine.offsetWidth; // Force reflow
-      verticalLine.style.animation = "fade-in-tree-line 1s ease-out forwards";
-    }
-  });
-  document.querySelectorAll('.tree-line-horizontal').forEach(horizontalLine => {
-    if(horizontalLine.getAttribute('checkeId') != checkedId ) {
-      horizontalLine.setAttribute('checkeId', checkedId);
-      horizontalLine.style.animation = "none";
-      void horizontalLine.offsetWidth; // Force reflow
-      horizontalLine.style.animation = "fade-in-tree-line 1s ease-out forwards";
-    }
-  });
-}
-
 function maximize(sublist, description) {
   sublist.style.animation = "none";
   void sublist.offsetWidth;
@@ -240,23 +97,13 @@ function maximize(sublist, description) {
     description.style.animation = "fadeInDescription 0.3s ease-out forwards";
     description.classList.remove("hidden");
   }
-  
-  animateReapearAllTreeLines();
-  setTimeout(() => {
-    updateTreeLineHeight(sublist);
-    updateAllTreeLines();
-  }, 500);
 }
 
 function minimize(sublist, description) {
   sublist.style.animation = "none";
   void sublist.offsetWidth;
   sublist.style.animation = "fadeOutSubtasks 0.3s ease-out forwards";
-  animateReapearAllTreeLines()
-  setTimeout(() => {
-    sublist.classList.add("hidden");
-    updateAllTreeLines();
-  }, 500);
+  setTimeout(() => sublist.classList.add("hidden"), 300);
 
   const toggleButton = sublist.parentElement.querySelector(".btn-toggle");
   toggleButton.textContent = "▶";
@@ -269,6 +116,45 @@ function minimize(sublist, description) {
   }
 }
 
+function openFullscreen(img) {
+  const modal = document.createElement('div');
+  modal.className = 'modal-img';
+  modal.style.display = 'none';
+
+  const clone = img.cloneNode(true);
+  clone.style.maxWidth = '90%';
+  clone.style.maxHeight = '90%';
+
+  modal.appendChild(clone);
+  document.body.appendChild(modal);
+
+  requestAnimationFrame(() => {
+    modal.style.display = 'flex';
+  });
+
+  modal.addEventListener('click', () => {
+    modal.style.display = 'none';
+    setTimeout(() => modal.remove(), 200);
+  });
+}
+
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toastContainer');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+
+  container.appendChild(toast);
+
+  // Remove after 3s
+  setTimeout(() => {
+    toast.classList.add('removing');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
 window.openFullscreen = openFullscreen;
 window.showInsertionLine = showInsertionLine;
 window.hideInsertionLine = hideInsertionLine;
@@ -276,14 +162,4 @@ window.maximize = maximize;
 window.minimize = minimize;
 window.replaceURLsWithContent = replaceURLsWithContent;
 window.processLists = processLists; 
-window.addTreeLines = addTreeLines;
-window.updateTreeLineHeight = updateTreeLineHeight;
-window.removeTreeLines = removeTreeLines;
-window.updateAllTreeLines = updateAllTreeLines;
-
-window.addEventListener('resize', () => {
-  animateReapearAllTreeLines()
-  setTimeout(updateAllTreeLines, 500);
-});
-
-window.observer = observer; 
+window.showToast = showToast;

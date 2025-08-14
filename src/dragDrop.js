@@ -81,7 +81,7 @@ function setupDragAndDrop(li) {
 
         const toggleButton = li.querySelector(".btn-toggle");
         toggleButton.disabled = false;
-        toggleButton.style.color = "#000f";
+        toggleButton.style.color = "";
         window.maximize(sublist, li.querySelector(".task-description"));
       }
 
@@ -91,14 +91,12 @@ function setupDragAndDrop(li) {
       }
       if (window.lastParent) {
         window.validateParentOnRemove(window.lastParent);
-        const hasSubtasks = window.lastParent.querySelector(".subtasks").children.length > 1;
+        const hasSubtasks = window.lastParent.querySelector(".subtasks").children.length > 0;
         const hasDescription = window.lastParent.getAttribute("data-description").trim() !== "";
         const toggleButton = window.lastParent.querySelector(".btn-toggle");
         toggleButton.disabled = !hasSubtasks && !hasDescription;
-        toggleButton.style.color = toggleButton.disabled ? "#0000" : "#000f";
+        toggleButton.style.color = toggleButton.disabled ? "#0000" : "";
       }
-
-      window.saveToLocalStorage();
     }
   });
 }
