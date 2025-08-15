@@ -631,6 +631,13 @@ li.main-task span[contenteditable]:focus, li.subtask span[contenteditable]:focus
   box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.3);
 }
 
+/* Task text placeholder */
+span[contenteditable]:empty::before {
+  content: attr(placeholder);
+  color: rgba(255, 255, 255, 0.3);
+  font-style: italic;
+}
+
 .task-description {
   opacity: 0;
   animation: fadeInDescription 0.3s ease-out forwards;

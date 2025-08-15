@@ -45,16 +45,14 @@ function processList(newText) {
   const taskList = document.getElementById("taskList");
   
   const text = newText || localStorage.getItem("savedText") || ``;
-
-  // Basic format validation
-  // TODO: test with unvalid files to only accept the valid ones
   const lines = text.split("\n").filter(line => line.trim() !== "");
-  const hasValidTask = lines.some(line => line.trim().match(/^\s*\[[ x]\]\s+\S+/));
+  // // Basic format validation}
+  // const hasValidTask = lines.some(line => line.trim().match(/^\s*\[[ x]\]\s+\S+/));
   
-  if (!hasValidTask) {
-    throw new Error("Invalid task list format");
-  }
-
+  // if (!hasValidTask) {
+  //   throw new Error("Invalid task list format");
+  // }
+  
   taskList.style.animation = "none";
   void taskList.offsetWidth;
   taskList.style.animation = "fadeIn 0.5s ease-out forwards";
@@ -93,7 +91,7 @@ function processList(newText) {
       <button class="btn-toggle" onclick="toggleChildren(this)">▼</button>
       <button onclick="removeTask(this)">🗑</button>
       <input type="checkbox" ${isChecked ? "checked" : ""}>
-      <span contenteditable="true">${text}</span>
+      <span contenteditable="true" placeholder="Task text">${text}</span>
       <button onclick="openModal(this)">📝</button>
       <button onclick="addTask('Subtask', this.parentElement.querySelector('.subtasks'), ${level + 1})">+</button>
       <div class="task-description ${description ? "" : "hidden"}">${innerDescription}</div>

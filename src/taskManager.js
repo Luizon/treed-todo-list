@@ -1,4 +1,4 @@
-function addTask(text = "New task", parent = document.getElementById("taskList"), level = 0) {
+function addTask(text = "", parent = document.getElementById("taskList"), level = 0) {
   const li = document.createElement("li");
   const taskType = level === 0 ? "main-task" : "subtask";
   li.classList.add(taskType);
