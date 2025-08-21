@@ -91,7 +91,7 @@ function processList(newText) {
       <button class="btn-toggle" onclick="toggleChildren(this)">▼</button>
       <button onclick="removeTask(this)">🗑</button>
       <input type="checkbox" ${isChecked ? "checked" : ""}>
-      <span contenteditable="true" placeholder="Task text">${text}</span>
+      <span contenteditable="true" placeholder="Task name">${text}</span>
       <button onclick="openModal(this)">📝</button>
       <button onclick="addTask('Subtask', this.parentElement.querySelector('.subtasks'), ${level + 1})">+</button>
       <div class="task-description ${description ? "" : "hidden"}">${innerDescription}</div>

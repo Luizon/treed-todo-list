@@ -8,7 +8,7 @@ function addTask(text = "", parent = document.getElementById("taskList"), level 
     <button class="btn-toggle" onclick="toggleChildren(this)" disabled style="color: #0000;">▼</button>
     <button onclick="removeTask(this)">🗑</button>
     <input type="checkbox">
-    <span contenteditable="true">${text}</span>
+    <span contenteditable="true" placeholder="Task name">${text}</span>
     <button onclick="openModal(this)">📝</button>
     <button onclick="addTask('Subtask', this.parentElement.querySelector('.subtasks'), ${level + 1})">+</button>
     <div class="task-description hidden"></div>
